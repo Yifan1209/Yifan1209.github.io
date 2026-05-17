@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="乱七八糟一亩三分地有人整理过八股 https:&#x2F;&#x2F;www.1point3acres.com&#x2F;bbs&#x2F;forum.php?mod&#x3D;viewthread&amp;tid&#x3D;998163 https:&#x2F;&#x2F;www.1point3acres.com&#x2F;bbs&#x2F;thread-998257-1-1.html 这个是一个答案 https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;640963575 Attenti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ML basic knowledge review">
+<meta property="og:url" content="http://example.com/2024/09/14/MLreview/index.html">
+<meta property="og:site_name" content="Asakiyume">
+<meta property="og:description" content="乱七八糟一亩三分地有人整理过八股 https:&#x2F;&#x2F;www.1point3acres.com&#x2F;bbs&#x2F;forum.php?mod&#x3D;viewthread&amp;tid&#x3D;998163 https:&#x2F;&#x2F;www.1point3acres.com&#x2F;bbs&#x2F;thread-998257-1-1.html 这个是一个答案 https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;640963575 Attenti">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207183825294.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207184635413.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207184745453.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/cover.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207231050309.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231218160550273.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231218154835882.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/110715utd8nm8x528tuvzn.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207052602215.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207052741751.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231218155615368.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207165923309.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207044108132.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207044341480.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207044440926.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207044912064.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231203151426226.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNzY1NTM3,size_16,color_FFFFFF,t_70.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207043557779.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231204201808637.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231207051217778.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231218044540728.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231218044739748.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231208210420901.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBARm9nZ3lGb3Jlc3Q=,size_19,color_FFFFFF,t_70,g_se,x_16.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/v2-3243c53e7d211b4c463b87f9b2f64aa4_720w.webp">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217182405596.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/v2-47b6b5c4fadc1ef9e7cbbb88a04a293f_720w.webp">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/v2-8b442ffd03ea0f103e9acc37a1db910a_720w.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217034203052.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217035142286.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/v2-96a3716cf7f112f7beabafb59e84f418_720w.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217193059614.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/v2-a4b35db50f882522ee52f61ddd411a5a_720w.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217035812661.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217041322482.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217035344567.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/v2-b26299d383aee0dd42b163e8bda74fc8_720w.png">
+<meta property="og:image" content="http://example.com/2024/09/14/MLreview/image-20231217184751754.png">
+<meta property="article:published_time" content="2024-09-15T06:24:31.000Z">
+<meta property="article:modified_time" content="2025-01-12T13:42:30.962Z">
+<meta property="article:author" content="Yifan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/09/14/MLreview/image-20231207183825294.png">
+
+<link rel="canonical" href="http://example.com/2024/09/14/MLreview/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>ML basic knowledge review | Asakiyume</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Asakiyume</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/14/MLreview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Yifan">
+      <meta itemprop="description" content="君を想いながら ひとり歩いています 流るる雨のごとく 流るる花のごとく">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Asakiyume">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ML basic knowledge review
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-09-14 23:24:31" itemprop="dateCreated datePublished" datetime="2024-09-14T23:24:31-07:00">2024-09-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-01-12 05:42:30" itemprop="dateModified" datetime="2025-01-12T05:42:30-08:00">2025-01-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="乱七八糟"><a href="#乱七八糟" class="headerlink" title="乱七八糟"></a>乱七八糟</h1><p>一亩三分地有人整理过八股</p>
+<p><a target="_blank" rel="noopener" href="https://www.1point3acres.com/bbs/forum.php?mod=viewthread&tid=998163">https://www.1point3acres.com/bbs/forum.php?mod=viewthread&amp;tid=998163</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.1point3acres.com/bbs/thread-998257-1-1.html">https://www.1point3acres.com/bbs/thread-998257-1-1.html</a></p>
+<p>这个是一个答案</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/640963575">https://zhuanlan.zhihu.com/p/640963575</a></p>
+<p>Attention代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MultiHeadAttention</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, d_model, num_heads</span>):</span><br><span class="line">        <span class="built_in">super</span>(MultiHeadAttention, self).__init__()</span><br><span class="line">        self.num_heads = num_heads</span><br><span class="line">        self.d_model = d_model</span><br><span class="line">        <span class="keyword">assert</span> d_model % self.num_heads == <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        self.d_k = d_model // self.num_heads</span><br><span class="line"></span><br><span class="line">        self.W_q = nn.Linear(d_model, d_model)</span><br><span class="line">        self.W_k = nn.Linear(d_model, d_model)</span><br><span class="line">        self.W_v = nn.Linear(d_model, d_model)</span><br><span class="line"></span><br><span class="line">        self.W_o = nn.Linear(d_model, d_model)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">scaled_dot_product_attention</span>(<span class="params">self, Q, K, V, mask=<span class="literal">None</span></span>):</span><br><span class="line">        batch_size = Q.size(<span class="number">0</span>)</span><br><span class="line">        K_length = K.size(-<span class="number">2</span>)</span><br><span class="line">    </span><br><span class="line">        QK = torch.matmul(Q, K.transpose(-<span class="number">2</span>, -<span class="number">1</span>)) / math.sqrt(self.d_k)</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span> mask <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            QK = QK.masked_fill(mask.to(QK.dtype) == <span class="number">0</span>, <span class="built_in">float</span>(<span class="string">&#x27;-inf&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        weights = F.softmax(QK, dim=-<span class="number">1</span>)</span><br><span class="line">        attention = torch.matmul(weights, V)</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">return</span> attention, weights</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">split_heads</span>(<span class="params">self, x, batch_size</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        The original tensor with dimension batch_size * seq_length * d_model is split into num_heads </span></span><br><span class="line"><span class="string">        so we now have batch_size * num_heads * seq_length * d_k</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> x.view(batch_size, -<span class="number">1</span>, self.num_heads, self.d_k).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, q, k, v, mask=<span class="literal">None</span></span>):</span><br><span class="line">        batch_size = q.size(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># linear layers</span></span><br><span class="line">        q = self.W_q(q)</span><br><span class="line">        k = self.W_k(k)</span><br><span class="line">        v = self.W_v(v)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># split into multiple heads</span></span><br><span class="line">        q = self.split_heads(q, batch_size)  </span><br><span class="line">        k = self.split_heads(k, batch_size)  </span><br><span class="line">        v = self.split_heads(v, batch_size)  </span><br><span class="line"></span><br><span class="line">        scores, weights = self.scaled_dot_product_attention(q, k, v, mask)</span><br><span class="line">        concat = scores.transpose(<span class="number">1</span>,<span class="number">2</span>).contiguous().view(batch_size, -<span class="number">1</span>, self.d_model)</span><br><span class="line"></span><br><span class="line">        output = self.W_o(concat)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> output, weights</span><br></pre></td></tr></table></figure>
+
+<p>在面试中还被问到过一点，出于运算速度的考虑，我们认为“一次大的矩阵乘法的执行速度实际上比多次较小的矩阵乘法更快”，因此你也可以：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">self.qkv = nn.Linear(d_model, <span class="number">3</span> * d_model)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在forward方法中</span></span><br><span class="line">qkv = self.qkv(x)  <span class="comment"># (batch_size, seq_len, 3 * d_model)</span></span><br><span class="line">q, k, v = torch.split(qkv, d_model, dim=-<span class="number">1</span>)  <span class="comment"># split into three tensors</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="八股整理："><a href="#八股整理：" class="headerlink" title="八股整理："></a>八股整理：</h2><p>Transformer</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/DA-southampton/NLP_ability/blob/master/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/Transformer/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%85%A8Transformer%E9%9D%A2%E8%AF%95%E9%A2%98.md">https://github.com/DA-southampton/NLP_ability/blob/master/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/Transformer/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%85%A8Transformer%E9%9D%A2%E8%AF%95%E9%A2%98.md</a></p>
+<h2 id="Other-things-need-to-learn"><a href="#Other-things-need-to-learn" class="headerlink" title="Other things need to learn:"></a>Other things need to learn:</h2><p>trace of matrices</p>
+<p>newton method</p>
+<h2 id="LDA-Linear-Discriminant-Analysis"><a href="#LDA-Linear-Discriminant-Analysis" class="headerlink" title="LDA (Linear Discriminant Analysis):"></a>LDA (Linear Discriminant Analysis):</h2><p>project points to a line, and choose the line that minimize the in-class covariance and maximize inter-class variance</p>
+<p><img src="/2024/09/14/MLreview/image-20231207183825294.png" alt="image-20231207183825294"></p>
+<p>代入$y_i&#x3D;w^Tx$得<br>$$<br>J&#x3D;\frac{w^TS_bw}{w^TS_ww}<br>$$<br>Sw: within class scatter matrix, Sb: between class scatter matrix</p>
+<p>w改变幅度，J不变，只需要关心w的方向，可令分母为c，求解分子即可</p>
+<img src="image-20231207184635413.png" alt="image-20231207184635413" style="zoom:67%;" />
+
+<p>选择w0：</p>
+<img src="image-20231207184745453.png" alt="image-20231207184745453" style="zoom:67%;" />
+
+<h2 id="Linear-Regression"><a href="#Linear-Regression" class="headerlink" title="Linear Regression:"></a>Linear Regression:</h2><p>基本的5个假设</p>
+<p>自变量为线性，自变量之间互相独立，误差之间相互独立，误差项的方差是常数，误差服从正态分布<br>$$<br>MSE(w) &#x3D; \frac1N (Xw-y)^T(Xw-y)\<br>\frac{\part MSE(w)}{\part w} &#x3D; \frac2N X^T(Xw-y)&#x3D;0\<br>X^TXw&#x3D;X^Ty\<br>w &#x3D; (X^TX)^{-1}X^Ty<br>$$</p>
+<p>$X^TX$ not invertible:</p>
+<p>PCA select features</p>
+<p>SVD or normalization</p>
+<p>using <strong>SVD</strong>:<br>$$<br>let X&#x3D;U\Sigma V^T\<br>X^TXw &#x3D; V\Sigma^T\Sigma V^Tw &#x3D; X^Ty&#x3D;V\Sigma U^Ty\<br>w &#x3D; V\Sigma^{-1}U^Ty<br>$$<br>where $V\Sigma^{-1}U^T$ is pseudoinverse of X.</p>
+<img src="cover.png" alt="img" style="zoom:67%;" />
+
+<p>U, V are unitary matrices</p>
+<p>using <strong>normalization</strong>:<br>$$<br>Error &#x3D; \frac1N (Xw-y)^T(Xw-y) + \lambda ||w||^2\<br>\frac{\part Error}{\part w} &#x3D; \frac2N X^T(Xw-y)+\lambda w&#x3D;0\<br>(X^TX+\lambda I)w&#x3D;X^Ty\<br>w &#x3D; (X^TX+\lambda I)^{-1}X^Ty<br>$$</p>
+<h2 id="Logistic-Regression"><a href="#Logistic-Regression" class="headerlink" title="Logistic Regression"></a>Logistic Regression</h2><img src="image-20231207231050309.png" alt="image-20231207231050309" style="zoom:67%;" />
+
+<img src="image-20231218160550273.png" alt="image-20231218160550273" style="zoom: 80%;" />
+
+<p>在Logistics Regression中，优化cross entropy等于优化NLL。这两个标准是思考的角度不同，一个是信息论（预测的分布跟真实分布尽可能像），一个是概率论。</p>
+<h3 id="用MSE误差做Logistic-Regression可以吗"><a href="#用MSE误差做Logistic-Regression可以吗" class="headerlink" title="用MSE误差做Logistic Regression可以吗"></a>用MSE误差做Logistic Regression可以吗</h3><p><strong>用MSE做loss的Logistic Regression是convex problem吗？</strong></p>
+<img src="image-20231218154835882.png" alt="image-20231218154835882" style="zoom: 80%;" />
+
+<p><img src="/2024/09/14/MLreview/110715utd8nm8x528tuvzn.png" alt="img"></p>
+<h2 id="Kmeans"><a href="#Kmeans" class="headerlink" title="Kmeans"></a>Kmeans</h2><p>缺点：K值需要人为设定；对初始值敏感；对异常值敏感；只能分到一类；假定了每一类的形状是球形，对于非球形的数据分布效果不好；对于各个维度scale不一样的分布，效果不好（可以标准化normalization）；不能处理离散值。</p>
+<p>选择k值：手肘法</p>
+<p>核函数</p>
+<p>迭代停止条件：</p>
+<h2 id="GMM"><a href="#GMM" class="headerlink" title="GMM"></a>GMM</h2><p>GMM的EM算法跟Kmeans不一样！！！</p>
+<p>E步计算的是每个点属于每一类的概率，不是直接分类</p>
+<p><img src="/2024/09/14/MLreview/image-20231207052602215.png" alt="image-20231207052602215"></p>
+<p>M步按照前面算出的概率对每个点加权，算出新的分布</p>
+<p><img src="/2024/09/14/MLreview/image-20231207052741751.png" alt="image-20231207052741751"></p>
+<p>初始化中心可以用kmeans</p>
+<p>GMM和kmeans关系：kmeans是硬分配，GMM是软分配</p>
+<p>kmeans相当于认为各类分布均为单位方差的高斯分布</p>
+<h2 id="EM算法"><a href="#EM算法" class="headerlink" title="EM算法"></a>EM算法</h2><p>一个HMM里的应用</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/78311644">https://zhuanlan.zhihu.com/p/78311644</a></p>
+<p>？</p>
+<p>再看看</p>
+<h2 id="生成模型有哪些"><a href="#生成模型有哪些" class="headerlink" title="生成模型有哪些"></a>生成模型有哪些</h2><p><strong>GMM</strong>和其他混合模型<br><strong>HMM</strong><br>随机上下文无关文法<br><strong>朴素贝叶斯</strong>分类器</p>
+<p>贝叶斯网络</p>
+<p>GAN，VAE，GPT，DALLE等</p>
+<p>生成模型学习P(x,y)，判别模型学习P(y|x)。虽然也有很多生成模型会用P(x,y)去算P(y|x)，但是毕竟是先求出了P(x,y)。</p>
+<h2 id="Ridge和-Lasso，L2和L1"><a href="#Ridge和-Lasso，L2和L1" class="headerlink" title="Ridge和 Lasso，L2和L1"></a>Ridge和 Lasso，L2和L1</h2><ul>
+<li>从贝叶斯角度看，lasso（L1 正则）等价于参数 w� 的先验概率分布满足拉普拉斯分布，而 ridge（L2 正则）等价于参数 w� 的先验概率分布满足高斯分布。具体参考博客 <a target="_blank" rel="noopener" href="https://blog.csdn.net/zhuxiaodong030/article/details/54408786">从贝叶斯角度深入理解正则化 – Zxdon</a> 。</li>
+</ul>
+<p>为什么L1稀疏（公式推导）</p>
+<p><img src="/2024/09/14/MLreview/image-20231218155615368.png" alt="image-20231218155615368"></p>
+<h2 id="数据类别不平衡怎么办"><a href="#数据类别不平衡怎么办" class="headerlink" title="数据类别不平衡怎么办"></a>数据类别不平衡怎么办</h2><p>假设正例少，负例多</p>
+<p>增大正例的采样率，舍弃一些负样本</p>
+<p>调整阈值</p>
+<p>集成学习如XGBoost</p>
+<p>生成一些正例</p>
+<p>使用precision@n等评价指标</p>
+<h1 id="集成学习-ensemble-learning"><a href="#集成学习-ensemble-learning" class="headerlink" title="集成学习 ensemble learning"></a>集成学习 ensemble learning</h1><p>bagging: 并行</p>
+<p><img src="/2024/09/14/MLreview/image-20231207165923309.png" alt="image-20231207165923309"></p>
+<p>boosting: 串行</p>
+<h1 id="各种熵，KL散度"><a href="#各种熵，KL散度" class="headerlink" title="各种熵，KL散度"></a>各种熵，KL散度</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wuliytTaotao/p/9713038.html">https://www.cnblogs.com/wuliytTaotao/p/9713038.html</a></p>
+<p>自信息：一个事件X&#x3D;x的自信息 -logP(x)</p>
+<p>log2单位是bit，ln nats</p>
+<p>香农熵：<img src="/2024/09/14/MLreview/image-20231207044108132.png" alt="image-20231207044108132"></p>
+<p>KL散度（divergence)或者叫relative entropy：等于一个交叉熵减去一个信息熵</p>
+<p>两个分布的差异</p>
+<p><img src="/2024/09/14/MLreview/image-20231207044341480.png" alt="image-20231207044341480"></p>
+<p>交叉熵</p>
+<p><img src="/2024/09/14/MLreview/image-20231207044440926.png" alt="image-20231207044440926"></p>
+<p>kl散度和交叉熵都<strong>不具有对称性</strong>。</p>
+<p><img src="/2024/09/14/MLreview/image-20231207044912064.png" alt="image-20231207044912064"></p>
+<p>互信息：？</p>
+<h1 id="各类准确度"><a href="#各类准确度" class="headerlink" title="各类准确度"></a>各类准确度</h1><p>precision: ratio of true positive to all predicted positive 查准率。预测正确的正样本数量，和预测出来的正样本（不管实际是正是负）的数量之比。越大就说明“存伪”错误越小</p>
+<p>recall: ratio of true positive to all actual positive 查全率。预测的正样本的数量，和所有正样本（不管预测的是什么）数量之比。越大就说明“去真”错误越小。</p>
+<p>F1 score: precision和recall的调和平均 harmonic mean</p>
+<p><img src="/2024/09/14/MLreview/image-20231203151426226.png" alt="image-20231203151426226"></p>
+<p>PR图：Precision-Recall</p>
+<p>AUC: area under curve</p>
+<p>BEP Break-Even Point 平衡点</p>
+<img src="watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNzY1NTM3,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述" style="zoom:50%;" />
+
+<p>ROC图：</p>
+<p>真正例率TPR&#x3D;TP&#x2F;(TP+FN) 分对了的正例占所有实际上positive的比例</p>
+<p>假正例率FPR&#x3D;FP&#x2F;(TN+FP) 分错了的反例占所有实际上negative的比例</p>
+<p>ROC曲线： TPR-FPR</p>
+<p>mAP: mean average precision  目标检测常用的一个衡量标准，所有类别AP（应该就是AUC）的平均值</p>
+<p><strong>ranking design的时候用什么metric，推荐的时候用什么等？</strong></p>
+<p><em>排序任务的指标：</em> - <em>MAP：将排序后，所有relevant position处的precision进行平均</em> - <em>MRR：将Top-1所在rank的倒数作平均</em> - <em>NDCG：DCG就是每个位置的相关性，除以相应位置的对数（排序越往后，重要性越低）。NDCG就是DCG除以DCG的理论最大值。</em></p>
+<h1 id="about-deep-learning-training"><a href="#about-deep-learning-training" class="headerlink" title="about deep learning training"></a>about deep learning training</h1><h2 id="Momentum-and-Adam"><a href="#Momentum-and-Adam" class="headerlink" title="Momentum and Adam"></a>Momentum and Adam</h2><p>Momentum：移动指数加权平均</p>
+<p>RMSProp：root mean square prop 梯度按照元素平方做指数加权移动平均</p>
+<p>因为<strong>db经常会大于dw很多</strong>，所以b更新的幅度比w大很多。因此希望db和dw差不多大，所以就除以这个dw^2或者db^2的指数滑动平均</p>
+<p><img src="/2024/09/14/MLreview/image-20231207043557779.png" alt="image-20231207043557779"></p>
+<p><strong>adam</strong>：</p>
+<img src="image-20231204201808637.png" alt="image-20231204201808637" style="zoom:67%;" />
+
+<h2 id="梯度爆炸、消失"><a href="#梯度爆炸、消失" class="headerlink" title="梯度爆炸、消失"></a>梯度爆炸、消失</h2><p>从深层网络角度来讲，不同的层学习的速度差异很大，表现为网络中靠近输出的层学习的情况很好，靠近输入的层学习的很慢，有时甚至训练了很久，前几层的权值和刚开始随机初始化的值差不多。</p>
+<p>如果导数大于1，那么层数增多的时候，最终的求出的梯度更新将以指数形式增加，即发生<strong>梯度爆炸</strong>，如果此部分小于1，那么随着层数增多，求出的梯度更新信息将会以指数形式衰减，即发生了<strong>梯度消失</strong>。</p>
+<p>解决：<strong>regularization</strong>，换<strong>激活函数</strong>比如relu，梯度剪切，residual</p>
+<p>ReLU： </p>
+<p>x&gt;0时<strong>导数为1，不存在爆炸的问题</strong></p>
+<p>缺点：负数部分恒为0，会导致<strong>一些神经元无法激活</strong>（可通过设置小学习率部分解决）</p>
+<p><strong>BatchNorm</strong>: </p>
+<p><img src="/2024/09/14/MLreview/image-20231207051217778.png" alt="image-20231207051217778"></p>
+<p><strong>Residual</strong></p>
+<p>resnet解决的一个是梯度消失和爆炸问题，一个是退化(degradation)(深层网络中含有大量非线性变化，每次变化相当于丢失了特征的一些原始信息，从而导致层数越深退化现象越严重。)</p>
+<h2 id="偏差和方差，欠拟合和过拟合"><a href="#偏差和方差，欠拟合和过拟合" class="headerlink" title="偏差和方差，欠拟合和过拟合"></a>偏差和方差，欠拟合和过拟合</h2><img src="image-20231218044540728.png" alt="image-20231218044540728" style="zoom:67%;" />
+
+<img src="image-20231218044739748.png" alt="image-20231218044739748" style="zoom:67%;" />
+
+<h2 id="解决过拟合"><a href="#解决过拟合" class="headerlink" title="解决过拟合"></a>解决过拟合</h2><p>常用方法：增加训练数据，数据增强，正则化，换用较简单的模型，early stop，集成学习，（对于可以预训练的模型）pretrain+finetune，（对于决策树）剪枝pruning</p>
+<h3 id="正则化："><a href="#正则化：" class="headerlink" title="正则化："></a>正则化：</h3><p>L1，L2，（对于神经网络而言）dropout，weight decay</p>
+<h3 id="Weight-Decay权重衰减"><a href="#Weight-Decay权重衰减" class="headerlink" title="Weight Decay权重衰减"></a>Weight Decay权重衰减</h3><p>梯度下降时，前一步的参数乘以一个1-lambda</p>
+<p><img src="/2024/09/14/MLreview/image-20231208210420901.png" alt="image-20231208210420901"></p>
+<p>对于SGD，等价于L2 regularization</p>
+<p>对于Adam：AdamW</p>
+<p><img src="/2024/09/14/MLreview/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBARm9nZ3lGb3Jlc3Q=,size_19,color_FFFFFF,t_70,g_se,x_16.png" alt="在这里插入图片描述"></p>
+<h2 id="Normalization-归一化-BN，LN"><a href="#Normalization-归一化-BN，LN" class="headerlink" title="Normalization 归一化 BN，LN"></a>Normalization 归一化 BN，LN</h2><h3 id="BN"><a href="#BN" class="headerlink" title="BN:"></a><strong>BN</strong>:</h3><p>训练时，均值、方差分别是该<strong>批次内</strong>数据相应维度的均值和方差。<br>推理时，均值、方差是基于<strong>所有批次的期望</strong>计算得到的。其中在推理时所用的均值和方差时通过<strong>移动平均</strong>计算得到的，可以减少存储每个batch均值方差的内存。</p>
+<p>BN效果跟Batch size有关，<strong>batch size小的时候效果不好</strong></p>
+<p>加速网络训练：BN通过<strong>减小内部协变量偏移</strong>，使得每一层的输入分布更加稳定，从而加速网络的训练过程。同时，BN还允许使用更大的学习率，加快网络的收敛速度。</p>
+<p>提升网络泛化能力：BN能够在一定程度上减轻模型的过拟合风险，从而提升网络的泛化能力。</p>
+<p>减小对参数初始化的敏感性：BN的归一化操作使得网络对参数初始化更加鲁棒，不再过于依赖谨慎的参数初始化，从而简化了网络的设计过程。</p>
+<p>提高模型的鲁棒性：BN能够增加模型对输入数据的鲁棒性，使得模型对输入数据的小扰动更加稳定。</p>
+<h3 id="LN"><a href="#LN" class="headerlink" title="LN:"></a><strong>LN</strong>:</h3><p>单个sample</p>
+<p>LN层与BN相比，只考虑单个sample内的统计变量，因此也不用使用BN实现中的running mean, running var.，LN也完全不用考虑输入batch_size的问题。</p>
+<p>至于为什么transformer中不使用BN归一化</p>
+<blockquote>
+<p>解释一：CV和NLP数据特性的不同，对于NLP数据，前向和反向传播中，<strong>batch统计量及其梯度都不太稳定</strong>，一个Batch中每个句子<strong>对应位置的分量不一定有意义</strong>。<br>解释二：要能在<strong>某个维度做独立同分布</strong>假设，才能合理归一化。对于<strong>CV来说，batch之间的图像是独立的</strong>，可以使用BN，而对于自然语言的token，相互是具有较强的关联性，不是相互独立的。</p>
+</blockquote>
+<p><img src="/2024/09/14/MLreview/v2-3243c53e7d211b4c463b87f9b2f64aa4_720w.webp" alt="img"></p>
+<p><img src="/2024/09/14/MLreview/image-20231217182405596.png" alt="image-20231217182405596"></p>
+<h2 id="CNN-Pooling"><a href="#CNN-Pooling" class="headerlink" title="CNN Pooling"></a>CNN Pooling</h2><p>（1）保留主要特征的同时减少参数和计算量，防止过拟合。</p>
+<p>（2）invariance(不变性)，这种不变性包括translation(平移)，rotation(旋转)，scale(尺度)。</p>
+<p>Pooling 层说到底还是一个特征选择，信息过滤的过程。也就是说我们损失了一部分信息，这是一个和计算性能的一个妥协，随着运算速度的不断提高，我认为这个妥协会越来越小。</p>
+<h1 id="Transformer和BERT八股"><a href="#Transformer和BERT八股" class="headerlink" title="Transformer和BERT八股"></a>Transformer和BERT八股</h1><p>Transformer：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/338817680%E8%BF%99%E4%B8%AA%E6%84%9F%E8%A7%89%E8%AE%B2%E7%9A%84%E6%9C%80%E5%A5%BD">https://zhuanlan.zhihu.com/p/338817680这个感觉讲的最好</a></p>
+<img src="v2-47b6b5c4fadc1ef9e7cbbb88a04a293f_720w.webp" alt="img" style="zoom:67%;" />
+
+<p>位置embedding：</p>
+<img src="v2-8b442ffd03ea0f103e9acc37a1db910a_720w.png" alt="img" style="zoom:67%;" />
+
+<ul>
+<li>使 PE 能够适应比训练集里面所有句子更长的句子，假设训练集里面最长的句子是有 20 个单词，突然来了一个长度为 21 的句子，则使用公式计算的方法可以计算出第 21 位的 Embedding。</li>
+<li>可以让模型容易地计算出相对位置，对于固定长度的间距 k，<strong>PE(pos+k)</strong> 可以用 <strong>PE(pos)</strong> 计算得到。因为 Sin(A+B) &#x3D; Sin(A)Cos(B) + Cos(A)Sin(B), Cos(A+B) &#x3D; Cos(A)Cos(B) - Sin(A)Sin(B)。</li>
+</ul>
+<h2 id="Attention："><a href="#Attention：" class="headerlink" title="Attention："></a>Attention：</h2><img src="image-20231217034203052.png" alt="image-20231217034203052" style="zoom:67%;" />
+
+<img src="image-20231217035142286.png" alt="image-20231217035142286" style="zoom:67%;" />
+
+<p>softmax是对每一行（对每个Q）的：</p>
+<img src="v2-96a3716cf7f112f7beabafb59e84f418_720w.png" alt="img" style="zoom:67%;" />
+
+<p>最后这个矩阵乘以V得到结果Z</p>
+<p>为什么scale是根号d</p>
+<p><img src="/2024/09/14/MLreview/image-20231217193059614.png" alt="image-20231217193059614"></p>
+<h2 id="Encoder"><a href="#Encoder" class="headerlink" title="Encoder:"></a>Encoder:</h2><p>残差：防止网络退化</p>
+<p>（ps resnet的残差想法是来源于lstm控制门）</p>
+<p>add和norm：先add后norm</p>
+<img src="v2-a4b35db50f882522ee52f61ddd411a5a_720w.png" alt="img" style="zoom: 67%;" />
+
+<p>残差作用：</p>
+<p>1.解决梯度消失&#x2F;爆炸问题</p>
+<img src="image-20231217035812661.png" alt="image-20231217035812661" style="zoom:50%;" />
+
+<p>2.退化问题</p>
+<p><img src="/2024/09/14/MLreview/image-20231217041322482.png" alt="image-20231217041322482"></p>
+<p>Linear层：把所有头concatenate然后linear</p>
+<img src="image-20231217035344567.png" alt="image-20231217035344567" style="zoom:50%;" />
+
+<h2 id="Decoder"><a href="#Decoder" class="headerlink" title="Decoder:"></a>Decoder:</h2><p>需要mask，把当前单词及其后面单词都给mask掉</p>
+<img src="v2-b26299d383aee0dd42b163e8bda74fc8_720w.png" alt="img" style="zoom:67%;" />
+
+<p>交互attention：Q来自于decoder自己（masked），K和V来自Encoder输出</p>
+<h2 id="为什么Transformer效果好："><a href="#为什么Transformer效果好：" class="headerlink" title="为什么Transformer效果好："></a>为什么Transformer效果好：</h2><p>1.长距离依赖</p>
+<p>2.并行计算</p>
+<p>3.相比RNN，网络可以做更深（elmo双层双向lstm训练很慢）</p>
+<h2 id="为什么要用QKV，而不是只用QV或者KV："><a href="#为什么要用QKV，而不是只用QV或者KV：" class="headerlink" title="为什么要用QKV，而不是只用QV或者KV："></a>为什么要用QKV，而不是只用QV或者KV：</h2><p>用QKV的话模型的表达能力要比QV或者KV好</p>
+<p>？</p>
+<h2 id="为什么要Multi-head"><a href="#为什么要Multi-head" class="headerlink" title="为什么要Multi head"></a>为什么要Multi head</h2><p>将模型分为多个头，形成多个子空间，可以让模型去关注不同方面的信息，最后再将各个方面的信息综合起来。类比CNN中同时使用<strong>多个卷积核</strong>的作用，有助于网络捕捉到更丰富的特征&#x2F;信息。</p>
+<h2 id="BERT："><a href="#BERT：" class="headerlink" title="BERT："></a>BERT：</h2><h3 id="Byte-Pair-Encoding-BPE"><a href="#Byte-Pair-Encoding-BPE" class="headerlink" title="Byte Pair Encoding (BPE)"></a>Byte Pair Encoding (BPE)</h3><p>迭代合并字符；随着合并的次数增加，词表大小通常先增加后减小。迭代次数太小，大部分还是字母，没什么意义；迭代次数多，又重新变回了原来那几个词。所以词表大小要取一个中间值。</p>
+<img src="image-20231217184751754.png" alt="image-20231217184751754" style="zoom: 80%;" />
+
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/424631681">https://zhuanlan.zhihu.com/p/424631681</a></p>
+<h1 id="CNN八股"><a href="#CNN八股" class="headerlink" title="CNN八股"></a>CNN八股</h1><h1 id="RNN八股"><a href="#RNN八股" class="headerlink" title="RNN八股"></a>RNN八股</h1><p>跑个题，快排代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">quick_sort</span>(<span class="params">lists,i,j</span>):</span><br><span class="line">    <span class="keyword">if</span> i &gt;= j:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">list</span></span><br><span class="line">    pivot = lists[i]</span><br><span class="line">    low = i</span><br><span class="line">    high = j</span><br><span class="line">    <span class="keyword">while</span> i &lt; j:</span><br><span class="line">        <span class="keyword">while</span> i &lt; j <span class="keyword">and</span> lists[j] &gt;= pivot:</span><br><span class="line">            j -= <span class="number">1</span></span><br><span class="line">        lists[i]=lists[j]</span><br><span class="line">        <span class="keyword">while</span> i &lt; j <span class="keyword">and</span> lists[i] &lt;=pivot:</span><br><span class="line">            i += <span class="number">1</span></span><br><span class="line">        lists[j]=lists[i]</span><br><span class="line">    lists[j] = pivot</span><br><span class="line">    quick_sort(lists,low,i-<span class="number">1</span>)</span><br><span class="line">    quick_sort(lists,i+<span class="number">1</span>,high)</span><br><span class="line">    <span class="keyword">return</span> lists</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    lists=[<span class="number">30</span>,<span class="number">24</span>,<span class="number">5</span>,<span class="number">58</span>,<span class="number">18</span>,<span class="number">36</span>,<span class="number">12</span>,<span class="number">42</span>,<span class="number">39</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;排序前的序列为：&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> lists:</span><br><span class="line">        <span class="built_in">print</span>(i,end =<span class="string">&quot; &quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n排序后的序列为：&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> quick_sort(lists,<span class="number">0</span>,<span class="built_in">len</span>(lists)-<span class="number">1</span>):</span><br><span class="line">        <span class="built_in">print</span>(i,end=<span class="string">&quot; &quot;</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">排序前的序列为：</span><br><span class="line"><span class="number">30</span> <span class="number">24</span> <span class="number">5</span> <span class="number">58</span> <span class="number">18</span> <span class="number">36</span> <span class="number">12</span> <span class="number">42</span> <span class="number">39</span></span><br><span class="line">排序后的序列为：</span><br><span class="line"><span class="number">5</span> <span class="number">12</span> <span class="number">18</span> <span class="number">24</span> <span class="number">30</span> <span class="number">36</span> <span class="number">39</span> <span class="number">42</span> <span class="number">58</span></span><br></pre></td></tr></table></figure>
+
+<p>为什么快排比堆排快：cache使用</p>
+<p>在读取一个单位的数据(比如1个word)之后，不光单个word会被存入cache，与之内存地址相邻的几个word，都会以一个block为单位存入cache中。另外，cache相比内存小得多，当cache满了之后，会将旧的数据剔除，将新的数据覆盖上去。</p>
+<p>在进行堆排序的过程中，由于我们要比较一个数组前一半和后一半的数字的大小，而当数组比较长的时候，这前一半和后一半的数据相隔比较远，这就导致了经常在cache里面找不到要读取的数据，需要从内存中读出来，而当cache满了之后，以前读取的数据又要被剔除。<br>链接：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/23873747/answer/327295185">https://www.zhihu.com/question/23873747/answer/327295185</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/09/14/LLM-notes/" rel="prev" title="LLM notes">
+      <i class="fa fa-chevron-left"></i> LLM notes
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/09/14/iroha/" rel="next" title="いろは唄">
+      いろは唄 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%B1%E4%B8%83%E5%85%AB%E7%B3%9F"><span class="nav-number">1.</span> <span class="nav-text">乱七八糟</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E8%82%A1%E6%95%B4%E7%90%86%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">八股整理：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Other-things-need-to-learn"><span class="nav-number">1.2.</span> <span class="nav-text">Other things need to learn:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LDA-Linear-Discriminant-Analysis"><span class="nav-number">1.3.</span> <span class="nav-text">LDA (Linear Discriminant Analysis):</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linear-Regression"><span class="nav-number">1.4.</span> <span class="nav-text">Linear Regression:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logistic-Regression"><span class="nav-number">1.5.</span> <span class="nav-text">Logistic Regression</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8MSE%E8%AF%AF%E5%B7%AE%E5%81%9ALogistic-Regression%E5%8F%AF%E4%BB%A5%E5%90%97"><span class="nav-number">1.5.1.</span> <span class="nav-text">用MSE误差做Logistic Regression可以吗</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kmeans"><span class="nav-number">1.6.</span> <span class="nav-text">Kmeans</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GMM"><span class="nav-number">1.7.</span> <span class="nav-text">GMM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EM%E7%AE%97%E6%B3%95"><span class="nav-number">1.8.</span> <span class="nav-text">EM算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-number">1.9.</span> <span class="nav-text">生成模型有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ridge%E5%92%8C-Lasso%EF%BC%8CL2%E5%92%8CL1"><span class="nav-number">1.10.</span> <span class="nav-text">Ridge和 Lasso，L2和L1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%88%AB%E4%B8%8D%E5%B9%B3%E8%A1%A1%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="nav-number">1.11.</span> <span class="nav-text">数据类别不平衡怎么办</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0-ensemble-learning"><span class="nav-number">2.</span> <span class="nav-text">集成学习 ensemble learning</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E7%86%B5%EF%BC%8CKL%E6%95%A3%E5%BA%A6"><span class="nav-number">3.</span> <span class="nav-text">各种熵，KL散度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E7%B1%BB%E5%87%86%E7%A1%AE%E5%BA%A6"><span class="nav-number">4.</span> <span class="nav-text">各类准确度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#about-deep-learning-training"><span class="nav-number">5.</span> <span class="nav-text">about deep learning training</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Momentum-and-Adam"><span class="nav-number">5.1.</span> <span class="nav-text">Momentum and Adam</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A2%AF%E5%BA%A6%E7%88%86%E7%82%B8%E3%80%81%E6%B6%88%E5%A4%B1"><span class="nav-number">5.2.</span> <span class="nav-text">梯度爆炸、消失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%8F%E5%B7%AE%E5%92%8C%E6%96%B9%E5%B7%AE%EF%BC%8C%E6%AC%A0%E6%8B%9F%E5%90%88%E5%92%8C%E8%BF%87%E6%8B%9F%E5%90%88"><span class="nav-number">5.3.</span> <span class="nav-text">偏差和方差，欠拟合和过拟合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E8%BF%87%E6%8B%9F%E5%90%88"><span class="nav-number">5.4.</span> <span class="nav-text">解决过拟合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96%EF%BC%9A"><span class="nav-number">5.4.1.</span> <span class="nav-text">正则化：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Weight-Decay%E6%9D%83%E9%87%8D%E8%A1%B0%E5%87%8F"><span class="nav-number">5.4.2.</span> <span class="nav-text">Weight Decay权重衰减</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Normalization-%E5%BD%92%E4%B8%80%E5%8C%96-BN%EF%BC%8CLN"><span class="nav-number">5.5.</span> <span class="nav-text">Normalization 归一化 BN，LN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BN"><span class="nav-number">5.5.1.</span> <span class="nav-text">BN:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LN"><span class="nav-number">5.5.2.</span> <span class="nav-text">LN:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CNN-Pooling"><span class="nav-number">5.6.</span> <span class="nav-text">CNN Pooling</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transformer%E5%92%8CBERT%E5%85%AB%E8%82%A1"><span class="nav-number">6.</span> <span class="nav-text">Transformer和BERT八股</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention%EF%BC%9A"><span class="nav-number">6.1.</span> <span class="nav-text">Attention：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Encoder"><span class="nav-number">6.2.</span> <span class="nav-text">Encoder:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Decoder"><span class="nav-number">6.3.</span> <span class="nav-text">Decoder:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88Transformer%E6%95%88%E6%9E%9C%E5%A5%BD%EF%BC%9A"><span class="nav-number">6.4.</span> <span class="nav-text">为什么Transformer效果好：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8QKV%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%8F%AA%E7%94%A8QV%E6%88%96%E8%80%85KV%EF%BC%9A"><span class="nav-number">6.5.</span> <span class="nav-text">为什么要用QKV，而不是只用QV或者KV：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81Multi-head"><span class="nav-number">6.6.</span> <span class="nav-text">为什么要Multi head</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BERT%EF%BC%9A"><span class="nav-number">6.7.</span> <span class="nav-text">BERT：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Byte-Pair-Encoding-BPE"><span class="nav-number">6.7.1.</span> <span class="nav-text">Byte Pair Encoding (BPE)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CNN%E5%85%AB%E8%82%A1"><span class="nav-number">7.</span> <span class="nav-text">CNN八股</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RNN%E5%85%AB%E8%82%A1"><span class="nav-number">8.</span> <span class="nav-text">RNN八股</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Yifan</p>
+  <div class="site-description" itemprop="description">君を想いながら ひとり歩いています 流るる雨のごとく 流るる花のごとく</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yifan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="LLM笔记这篇是关于LLM的一些笔记和乱七八糟想法，未必正确。 OpenAI一开始就是大佬云集+资金充裕，想要搞出通用人工智能的 看了下GPT-1的几个作者，Alec Radford，他也是DCGAN的一作，15年发表，15k引用 Karthik Narasimhan在16年有一篇RL paper，1k多引用 Tim Salimans在2016年有一篇GAN文章9k引用 对比Transformer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM notes">
+<meta property="og:url" content="http://example.com/2024/09/14/LLM-notes/index.html">
+<meta property="og:site_name" content="Asakiyume">
+<meta property="og:description" content="LLM笔记这篇是关于LLM的一些笔记和乱七八糟想法，未必正确。 OpenAI一开始就是大佬云集+资金充裕，想要搞出通用人工智能的 看了下GPT-1的几个作者，Alec Radford，他也是DCGAN的一作，15年发表，15k引用 Karthik Narasimhan在16年有一篇RL paper，1k多引用 Tim Salimans在2016年有一篇GAN文章9k引用 对比Transformer">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019030303641.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019032958867.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/v2-5e303a6c65774679128547b38daba755_r.jpg">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019020243511.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019020243511.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019020944629.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019021021621.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/114514.jpg">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019023911359.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019024634419.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240206123313894.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240206123358562.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240219224917139.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240221204738264.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240221212250843.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240221221210949.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240222041039084.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240222043742577.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240223020959760.png">
+<meta property="og:image" content="http://example.com/2024/09/14/LLM-notes/image-20240223020943808.png">
+<meta property="article:published_time" content="2024-09-14T23:39:03.000Z">
+<meta property="article:modified_time" content="2024-09-15T06:29:55.483Z">
+<meta property="article:author" content="Yifan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/09/14/LLM-notes/image-20231019030303641.png">
+
+<link rel="canonical" href="http://example.com/2024/09/14/LLM-notes/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>LLM notes | Asakiyume</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Asakiyume</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/14/LLM-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Yifan">
+      <meta itemprop="description" content="君を想いながら ひとり歩いています 流るる雨のごとく 流るる花のごとく">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Asakiyume">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LLM notes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-09-14 16:39:03 / Modified: 23:29:55" itemprop="dateCreated datePublished" datetime="2024-09-14T16:39:03-07:00">2024-09-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="LLM笔记"><a href="#LLM笔记" class="headerlink" title="LLM笔记"></a>LLM笔记</h1><p>这篇是关于LLM的一些笔记和乱七八糟想法，未必正确。</p>
+<p>OpenAI一开始就是大佬云集+资金充裕，想要搞出通用人工智能的</p>
+<p>看了下GPT-1的几个作者，Alec Radford，他也是DCGAN的一作，15年发表，15k引用</p>
+<p>Karthik Narasimhan在16年有一篇RL paper，1k多引用</p>
+<p>Tim Salimans在2016年有一篇GAN文章9k引用</p>
+<p>对比Transformer的几个作者，在Transformer之前都没有什么高引用文章，顶多两三百。</p>
+<p>还有BERT一开始比GPT-1火，看有人说是因为BERT的完形填空确实比GPT-1的生成要简单（毕竟生成是extend，单边的），所以一开始BERT会有更好的效果</p>
+<p>BERT是在拟合$P(x_i|x_1, …,x_{i-1}, x_{i+1},…,x_n)$</p>
+<p>GPT是$P(x_i|x_1, …,x_{i-1})$</p>
+<p>然后$x_1$到$x_{i-1}$可以被看做是$text, prompt$</p>
+<p>所以对大量文本本身的学习导致了GPT的很强的few-shot, zero-shot泛化能力</p>
+<p>或者说，其实few-shot和zero-shot就不是一种传统意义上的机器学习，所以也没有违反机器学习的本质；GPT在预训练的时候是学过这个$P(output|input(including,,prompt))$分布的</p>
+<p>GPT1到3里面，GPT1即提出了zero-shot能力，GPT2开始增加规模，Scaling Laws讨论了模型规模对loss的影响，总之openai一直是在做同一件事。</p>
+<p>问题：为何prompt对LLM输出的影响这么大？</p>
+<p>可能两个原因，一个是LLM对真人的推理能力学习的还不够好（欠拟合&#x2F;数据不够等等）</p>
+<p>一个是，不好的prompt其实就没把事情说清楚</p>
+<p>let’s think step by step不是玄学（一开始我认为他跟《水知道答案》似的），它相当于告诉模型需要一步一步推理，不要一下生成答案（因为模型没有这个能力。很多情况下真人也没有这个能力，虽然我觉得我经常靠直觉）</p>
+<p>比如“去阿拉斯加旅游，给我提几个建议“</p>
+<p>这时候模型会按照P(x|“阿拉斯加”“旅游”“建议”）来生成文字，比如可能性最大的x是“阿拉斯加风景很好，建议多呆几天“</p>
+<p>如果把prompt改成，“去阿拉斯加旅游，需要做哪些准备“</p>
+<p>P(x|“阿拉斯加”“旅游”“准备”）这个分布就会不一样。</p>
+<p>如果让他step by step，那么</p>
+<p>P(x|“阿拉斯加”“旅游”“准备”“step by step”），这个分布的可能性最大的x是x&#x3D;“阿拉斯加纬度很高”这么一个直接的结论</p>
+<p>然后再把“阿拉斯加纬度很高”输入进去（自回归），就是</p>
+<p>P(x|“阿拉斯加”“旅游”“准备”“step by step”“纬度高”），输出x&#x3D;“天气冷”</p>
+<p>P(x|“阿拉斯加”“旅游”“准备”“step by step”“纬度高”“天气冷”），输出x&#x3D;“带上羽绒服“</p>
+<p>这个事情对于人类而言是常识，实际上gpt也很容易学会。但是比如让他算个Dijkstra，就不行了。</p>
+<h1 id="Scaling-Laws-for-Neural-Language-Models"><a href="#Scaling-Laws-for-Neural-Language-Models" class="headerlink" title="Scaling Laws for Neural Language Models"></a>Scaling Laws for Neural Language Models</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/620479884">https://zhuanlan.zhihu.com/p/620479884</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_52852138/article/details/131697352">https://blog.csdn.net/qq_52852138/article/details/131697352</a></p>
+<p>一个对LLM的理论研究，结论就是大力出奇迹……..大模型和大量数据才能得到更好的效果。这篇开门见山把所有结论先列出来了，后面才讲的实验，这种风格不错</p>
+<h2 id="核心结论"><a href="#核心结论" class="headerlink" title="核心结论"></a>核心结论</h2><ul>
+<li><p>模型表现和规模强相关，和模型的shape弱相关：规模包括模型参数量N（不包括embedding）、数据集大小D和计算量C，模型shape指模型depth、width、number of self-attention heads</p>
+</li>
+<li><p>幂方法则：对于模型参数量N、数据集大小D和计算量C三个因素，如果其他两个充足的前提下，模型表现和第三个因素成<strong>幂方关系</strong>（指数下降，类似$e^{-x}$）。实验曲线如下，可以看出D的影响最大</p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019030303641.png" alt="image-20231019030303641"></p>
+</li>
+<li><p>过拟合：当同时增加数据量和模型参数量时，模型表现会一直变好。当其中一个因素受限时，模型表现随另外一个因素增加变好，但是会逐渐衰减。下图表示数据量不足时，模型很快出现过拟合导致在测试集上效果很快衰减。数据和模型参数量的比例关系大致为$N^{0.74}&#x2F;D$ ，也就是<strong>模型参数增大8倍，数据也需要增大5倍</strong>才能发挥模型参数的全部潜力。</p>
+</li>
+</ul>
+<p>Universality of training：在模型参数量不变的情况下，模型的表现是可以预测的。通过对早期的训练曲线进行推断，就能粗略估计训练更长时间后模型的表现</p>
+<p>Transfer improves with text performance：当在分布不同的文本上评估模型时，结果与在验证集上的结果密切相关，损失的偏移量大致恒定。这说明用验证集的结果来作为评估指标是合理的</p>
+<p>Sample efficiency：大模型能在更少的step内，更少的数据（图4）上达到相同的性能</p>
+<p>Convergence is inefficient：当计算量固定时，但是模型大小和数据量没有限制时，<strong>大模型在得到最佳性能时，还远远没有收敛</strong>。最大训练效率训练比训练小模型到收敛是更 sample efficient的，数据需求随着计算量增长比较慢 D ∼ C 0.27 D \sim C^{0.27}D∼C<br>0.27</p>
+<p>Optimal batch size: 最好的batch size与loss有 power-law 关系，也受到梯度噪声规模的影响</p>
+<h1 id="Codex-Evaluating-Large-Language-Models-Trained-on-Code"><a href="#Codex-Evaluating-Large-Language-Models-Trained-on-Code" class="headerlink" title="Codex: Evaluating Large Language Models Trained on Code"></a>Codex: Evaluating Large Language Models Trained on Code</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32275289/article/details/124438494">https://blog.csdn.net/qq_32275289/article/details/124438494</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36936443/article/details/125452458?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-125452458-blog-124438494.235%5Ev38%5Epc_relevant_anti_t3_base&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-125452458-blog-124438494.235%5Ev38%5Epc_relevant_anti_t3_base&utm_relevant_index=2">https://blog.csdn.net/qq_36936443/article/details/125452458?spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-125452458-blog-124438494.235%5Ev38%5Epc_relevant_anti_t3_base&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-125452458-blog-124438494.235%5Ev38%5Epc_relevant_anti_t3_base&amp;utm_relevant_index=2</a></p>
+<p>基于GPT的模型架构，在GItHub上微调，可以用来编写Python代码</p>
+<p>感觉相比GPT的主线工作，像是个做着玩的？毕竟现在的GPT3和GPT4也可以写代码。</p>
+<p>细节：</p>
+<p>目标函数没有使用BLEU（困惑度），因为代码不同于自然语言，即使特别相似，但仍然可能不是一个合法的语句，作者使用<strong>pass@k</strong>来评估模型，即生成n个输出（n&gt;k），从中随机抽取k个输出，输出通过单元测试的概率</p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019032958867.png" alt="image-20231019032958867"></p>
+<p>对输出做softmax得到概率之前，会除以一个超参数Temperature，来调节不同输出之间的概率差距，当pass@k中的采样数k越大时，T越大效果越好</p>
+<p>模型局限性</p>
+<p>1. 样本有效性不够，需要训练很多的代码，模型才能输出比较简单的实验</p>
+<p>2. Prompt应该怎么写才能获得比较理想的代码，作者找了13 basic building block（对字符串做一些简单的操作：如改变大小写、变换位置等），将文档块任意串起来，发现文档越长，生成代码的质量越差，说明docstring不宜过长（这段可以仔细读一下）</p>
+<h1 id="InstructGPT"><a href="#InstructGPT" class="headerlink" title="InstructGPT"></a>InstructGPT</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/595891945">https://zhuanlan.zhihu.com/p/595891945</a></p>
+<p>这个说的很好，比原文好懂………</p>
+<p>无论是“一个问题后面接一个回答”，还是“一个问题后面接另一个问题”，都是训练语料中可能经常出现的<strong>模式</strong>，因此，你让模型根据一个问题来续写，那无论是续写问题的答案，还是续写更多的问题，对于模型来说都是合理的。这就是问题所在，如果让经过大规模语料（可能也没任何人知道数据集里到底都有些啥乱七八糟玩意儿）预训练的模型，<strong>在输出时符合人类的期待</strong>？</p>
+<p><img src="/2024/09/14/LLM-notes/v2-5e303a6c65774679128547b38daba755_r.jpg" alt="v2-5e303a6c65774679128547b38daba755_r"></p>
+<ul>
+<li>称初始模型为<strong>V0</strong>，也就是GPT-3。我们可以先人工构造一批数据，不用数量很大，尽其所能吧，然后先让模型学一学，我们这个时候模型为<strong>V1</strong>。</li>
+<li>然后让模型再根据一堆prompt输出，看看效果咋地，我们让模型<strong>V1</strong>对一个prompt进行多个输出，然后让人对多个输出进行打分排序，<em>排序的过程虽然也需要人工，但是比直接让人写训练数据，还是要方便的多</em>，因此这个过程可以更轻松地标注更多数据。然而，这个标注数据，并不能直接拿来训练模型，因为这是一个排序，但我们可以训练一个打分模型，称为<strong>RM</strong>（reward-model），RM的作用就是可以对一个<code>&lt;prompt,output&gt;</code>pair打分，评价这个output跟prompt搭不搭。</li>
+<li>接下来，我们继续训练<strong>V1</strong>模型，给定一些prompt，得到输出之后，把prompt和output输入给<strong>RM</strong>，得到打分，然后借助强化学习的方法，来训练<strong>V1</strong>模型，如此反复迭代，最终修炼得到<strong>V2</strong>模型，也就是最终的InstructGPT。</li>
+</ul>
+<p>“能实现这样的方式，我觉得前提就是——这个<strong>模型本身已经比较强大了</strong>。只有模型本身就比较强大了，才能人类提供少量的精华数据，就可以开始进行模仿，同时在第二步产出较为合理的输出供人类打分。所以这里的GPT-3作为出发点，是这一套流程能行得通的保证之一，而ChatGPT又是从GPT-3.5出发的，那效果肯定更加好了。”</p>
+<h1 id="T5-Google-2019-10"><a href="#T5-Google-2019-10" class="headerlink" title="T5 (Google) 2019.10"></a>T5 (Google) 2019.10</h1><p>T5 means Text-to-Text Transfer Transformer </p>
+<p>实在是有点太长了，先搜了下BERT做对比，然后剩下内容直接看解析</p>
+<p>这篇里搜索“GPT”, “OpenAI”啥都搜不到。问题：为什么不对比一下？</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/88377084">https://zhuanlan.zhihu.com/p/88377084</a></p>
+<p>all text-based language problems into a <strong>text to text format</strong>一个模型干所有NLP任务</p>
+<p>提出了C4 corpus</p>
+<p>模型：encoder-decoder，跟之前的transformer差别不大，改了下position encoding；encoder和decoder的规模分别都跟BERT差不多，所以参数量大约是BERT两倍</p>
+<p>训练：greedy decoding</p>
+<p>fine tune任务：4 tasks, machine translation, question answering, abstractive summarization, text classification</p>
+<p>无监督目标函数：有点像BERT的</p>
+<p>（问题：BERT&#x2F;GPT不也可以吗？创新之处在哪）</p>
+<p>文章里搜BERT的结果是：BERT produce a single prediction per input token or a single prediction for an entire input sequence. This makes them applicable for classification or span prediction tasks but not for generative tasks  </p>
+<p>说是BERT只适合做分类这种，不适合做生成</p>
+<p><strong>模型结构：</strong></p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019020243511.png" alt="image-20231019020243511"></p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019020243511.png" alt="image-20231019020243511"></p>
+<p>这个之后可以仔细看一下</p>
+<p>比较<strong>Unsupervised objectives</strong></p>
+<p><strong><img src="/2024/09/14/LLM-notes/image-20231019020944629.png" alt="image-20231019020944629"></strong></p>
+<p><strong>training strategy:</strong></p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019021021621.png" alt="image-20231019021021621"></p>
+<p>看来这个的模型大小和数据还不够？</p>
+<p>总之看这个知乎上的解析，没什么创新性的东西。尤其是现在GPT-3，GPT-4的时代了，甚至GPT1都提了zero-shot，这个模型本身应该没啥用了。就像那篇笔记里的人说的一样，OpenAI是一开始就想搞通用人工智能的，Google只是完成一点小任务。不过这篇里面的一些trick可以了解一下。</p>
+<p>代码解读：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/455216504">https://zhuanlan.zhihu.com/p/455216504</a></p>
+<h1 id="Switch-Transformers"><a href="#Switch-Transformers" class="headerlink" title="Switch Transformers"></a>Switch Transformers</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/362525526">https://zhuanlan.zhihu.com/p/362525526</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/344702054">https://zhuanlan.zhihu.com/p/344702054</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/351115630">https://zhuanlan.zhihu.com/p/351115630</a></p>
+<p><strong>1. Mixture of Experts（MoE）</strong>仅选择模型中的一部分进行计算</p>
+<p>由一个「门控网络」来选择咨询哪些专家。</p>
+<p>1.6万亿参数，但是用了MoE所以<strong>算起来还比较快</strong></p>
+<p><img src="/2024/09/14/LLM-notes/114514.jpg" alt="img"></p>
+<p>将Transformer中的前馈全连接子层（Feed-Forward Network，FFN）视为Expert，使用多个FFN代替原来单一的FFN，并且使用了最简单的路由选择策略，将K设置为1，即不同的输入只会选择一个FFN进行计算（<strong>sparse routing</strong>)</p>
+<p>（1）路由计算量减少，<strong>只有一个expert激活</strong>；</p>
+<p>（2）expert中的batch_size（专家容量）至少减半；</p>
+<p>（3）简化路由的实现，减少传统MOE方法中通信的代价。</p>
+<p><strong>2. 数据和权重划分：</strong></p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019023911359.png" alt="image-20231019023911359"></p>
+<p><strong>3. 随机精度</strong></p>
+<p><img src="/2024/09/14/LLM-notes/image-20231019024634419.png" alt="image-20231019024634419"></p>
+<p>问题：没看懂…….</p>
+<p>4. <strong>No-Token-Left-Behind机制</strong></p>
+<p>反复地把第一次路由的所有溢出的token重新进行路由</p>
+<p>结论：</p>
+<p>（1）Switch Transformer比MoE和Dense模型都要好；</p>
+<p>（2）Switch Transformer在capacity比较小的时候效果更好；</p>
+<p>（3）Switch Transformer比MoE要少一点计算量，如果让它们计算量相等的话，那么Switch Transformer还可以有更多提升(Switch-base-Expand)。</p>
+<h1 id="PaLM-2022-4"><a href="#PaLM-2022-4" class="headerlink" title="PaLM 2022.4"></a>PaLM 2022.4</h1><p>Google, 540B parameters</p>
+<h1 id="1-Low-Rank-Adaptation"><a href="#1-Low-Rank-Adaptation" class="headerlink" title="1.Low-Rank Adaptation"></a>1.Low-Rank Adaptation</h1><p>freezes the pretrained model weights and injects trainable rank decomposition matrices into each<br>layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks. </p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>1.finetune all parameters</p>
+<p>2. train only some parameters: inference latency(?), not good as finetune all parameters</p>
+<p>3.lora: over-parametrized models in fact reside on a low intrinsic dimension.</p>
+<p>advantages: </p>
+<p>(1) one pretrained big model + many small lora modules for different tasks</p>
+<p>(2) train faster</p>
+<p>(3) no inference latency(?计算大模型本身（不带lora模块）的计算量是不变的吧)</p>
+<p>对比的应该是这种？adapter</p>
+<p><a target="_blank" rel="noopener" href="https://codewithzichao.github.io/2020/07/02/NLP-%E8%B0%88%E8%B0%88BERT%E4%B8%AD%E7%9A%84Adapter%E7%BB%93%E6%9E%84/">https://codewithzichao.github.io/2020/07/02/NLP-%E8%B0%88%E8%B0%88BERT%E4%B8%AD%E7%9A%84Adapter%E7%BB%93%E6%9E%84/</a></p>
+<p>各层之间是串行关系，所以加这么一个bottleneck层并不能很好地利用并行性，跟加整层是一样的。相比之下lora加的是旁路</p>
+<h2 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h2><p>pre-trained language models have a low “instrisic dimension”</p>
+<p><img src="/2024/09/14/LLM-notes/image-20240206123313894.png" alt="image-20240206123313894"></p>
+<p>represent \DeltaW as BA</p>
+<p><img src="/2024/09/14/LLM-notes/image-20240206123358562.png" alt="image-20240206123358562"></p>
+<p>A: initialize as random gaussian, B&#x3D;0</p>
+<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><h1 id="2-Diffusion"><a href="#2-Diffusion" class="headerlink" title="2.Diffusion"></a>2.Diffusion</h1><p>Deep Unsupervised Learning using Nonequilibrium Thermodynamics</p>
+<p>forward (or inference) diffusion process which converts any complex data distribution into a simple, tractable, distribution, and then learn a finite-time reversal of this diffusion process which defines our generative model distribution</p>
+<h1 id="3-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models"><a href="#3-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models" class="headerlink" title="3.High-Resolution Image Synthesis with Latent Diffusion Models"></a>3.High-Resolution Image Synthesis with Latent Diffusion Models</h1><p>看了下别人的介绍，说是这个才是现在常用的diffusion？2哪个是最原始的论文，用物理上的扩散来建模的，现在都是用神经网络（unet这种）预测噪声</p>
+<h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p><strong>autoregressive</strong> (AR) transformers: <strong>66,67</strong></p>
+<p><strong>GANs</strong>: confined to data with comparably limited variability, model collapse, training instability problem</p>
+<p><strong>diffusion</strong>: class-conditional image synthesis and super-resolution, but still cost a lot of computation</p>
+<p><strong>This work</strong>: </p>
+<p>First is a <strong>perceptual compression</strong> stage which removes high-frequency details but still learns little semantic variation. </p>
+<p>In the second stage, the actual generative model learns the <strong>semantic and conceptual composition</strong> of the data.(WTF is this?)</p>
+<p><strong>separate</strong> training into two distinct phases: </p>
+<p>First, we train an autoencoder which provides a <strong>lower-dimensional</strong> (and thereby efficient) <strong>representational space</strong>.</p>
+<p>Then, train DMs in the learned latent space</p>
+<p>for text-to-image tasks: an architecture that <strong>connects transformers to the DM’s UNet backbone</strong></p>
+<p>citation <strong>23, 66</strong>是什么？in contrast to previous work [23,66], we do not need to rely on excessive spatial compression</p>
+<h2 id="Related-work"><a href="#Related-work" class="headerlink" title="Related work"></a>Related work</h2><p>VQGAN 23</p>
+<p>VQ-VAE 66</p>
+<h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><p> explicit separation of the compressive from the generative learning phase</p>
+<p>意思就是先用autoencoder压缩后，再训Diffusion？</p>
+<p>KL-penalty (like VAE) and VQ-reg</p>
+<img src="image-20240219224917139.png" alt="image-20240219224917139" style="zoom: 50%;" />
+
+<p>conditional: cross attention</p>
+<h2 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h2><p>1. downsampling factors: 4 to 16 best. 1 gave too much to the Diffusion, 32 lost too much information</p>
+<p>2. generating images</p>
+<p>3. conditional: text to image</p>
+<p>4. super resolution</p>
+<p>5. filling mask</p>
+<h1 id="4-VQGAN-23"><a href="#4-VQGAN-23" class="headerlink" title="4. VQGAN 23"></a>4. VQGAN 23</h1><p>Taming Transformers for High-Resolution Image Synthesis</p>
+<h1 id="6-DoRA-Weight-Decomposed-Low-Rank-Adaptation"><a href="#6-DoRA-Weight-Decomposed-Low-Rank-Adaptation" class="headerlink" title="6.DoRA: Weight-Decomposed Low-Rank Adaptation"></a>6.DoRA: Weight-Decomposed Low-Rank Adaptation</h1><h2 id="Background："><a href="#Background：" class="headerlink" title="Background："></a>Background：</h2><p>adapter-based methods</p>
+<p>prompt based methods: add extra soft tokens (prompts) to the initial input and focus solely on fine-tuning these trainable vectors</p>
+<p>lora(略)</p>
+<p>3.2做了个研究，关于finetune，lora和dora的magnitude和direction变化强度分析</p>
+<p>发现finetune的长度和方向变化关系不大，而lora基本上是正比。作者搞的dora则更像finetune，说明dora效果比lora好</p>
+<p><img src="/2024/09/14/LLM-notes/image-20240221204738264.png" alt="image-20240221204738264"></p>
+<p><img src="/2024/09/14/LLM-notes/image-20240221212250843.png" alt="image-20240221212250843"></p>
+<h2 id="Method-1"><a href="#Method-1" class="headerlink" title="Method"></a>Method</h2><p>using pretrained W0</p>
+<p>$m&#x3D;||W_0||_c$  and $V&#x3D;W_0$</p>
+<p>train V using LoRA</p>
+<p><img src="/2024/09/14/LLM-notes/image-20240221221210949.png" alt="image-20240221221210949"></p>
+<p>4.2 analysis ???没看懂</p>
+<h2 id="Reading-List"><a href="#Reading-List" class="headerlink" title="Reading List:"></a>Reading List:</h2><p>VeRA(Kopiczko et al., 2024)</p>
+<p>Weight Normalization(Salimans&amp; Kingma, 2016)</p>
+<p>VL-BART(Sung et al., 2022) </p>
+<p>LLaVA</p>
+<h1 id="7-VeRA-VECTOR-BASED-RANDOM-MATRIX-ADAPTATION"><a href="#7-VeRA-VECTOR-BASED-RANDOM-MATRIX-ADAPTATION" class="headerlink" title="7. VeRA: VECTOR-BASED RANDOM MATRIX ADAPTATION"></a>7. VeRA: VECTOR-BASED RANDOM MATRIX ADAPTATION</h1><img src="image-20240222041039084.png" alt="image-20240222041039084" style="zoom:50%;" />
+
+<p>A和B是随机初始化、固定的矩阵</p>
+<p>对角阵b和d可以训练</p>
+<h1 id="8-VL-BART"><a href="#8-VL-BART" class="headerlink" title="8. VL-BART"></a>8. VL-BART</h1><p>VL-ADAPTER: Parameter-Efficient Transfer Learning for Vision-and-Language Tasks</p>
+<img src="image-20240222043742577.png" alt="image-20240222043742577" style="zoom:67%;" />
+
+<p>insert Adapter [16] and its variants, Hyperformer [20] and Compacter [33] into the model</p>
+<p>这篇里提到了LoRA（ref 17），但是我记得LoRA的paper里是彻底否定了adapter的做法？</p>
+<h2 id="Readlist"><a href="#Readlist" class="headerlink" title="Readlist"></a>Readlist</h2><p>Adapter [16]</p>
+<p>Hyperformer [20]</p>
+<p>Compacter [33] </p>
+<p>Radford et al. [37] propose CLIP</p>
+<h1 id="9-Weight-Normalization"><a href="#9-Weight-Normalization" class="headerlink" title="9. Weight Normalization"></a>9. Weight Normalization</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55102378">https://zhuanlan.zhihu.com/p/55102378</a></p>
+<p><img src="/2024/09/14/LLM-notes/image-20240223020959760.png" alt="image-20240223020959760"></p>
+<p><img src="/2024/09/14/LLM-notes/image-20240223020943808.png" alt="image-20240223020943808"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/12/01/advanced%20C++/" rel="prev" title="Advanced C++">
+      <i class="fa fa-chevron-left"></i> Advanced C++
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/09/14/MLreview/" rel="next" title="ML basic knowledge review">
+      ML basic knowledge review <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LLM%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">LLM笔记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scaling-Laws-for-Neural-Language-Models"><span class="nav-number">2.</span> <span class="nav-text">Scaling Laws for Neural Language Models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E7%BB%93%E8%AE%BA"><span class="nav-number">2.1.</span> <span class="nav-text">核心结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Codex-Evaluating-Large-Language-Models-Trained-on-Code"><span class="nav-number">3.</span> <span class="nav-text">Codex: Evaluating Large Language Models Trained on Code</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InstructGPT"><span class="nav-number">4.</span> <span class="nav-text">InstructGPT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#T5-Google-2019-10"><span class="nav-number">5.</span> <span class="nav-text">T5 (Google) 2019.10</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Switch-Transformers"><span class="nav-number">6.</span> <span class="nav-text">Switch Transformers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PaLM-2022-4"><span class="nav-number">7.</span> <span class="nav-text">PaLM 2022.4</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Low-Rank-Adaptation"><span class="nav-number">8.</span> <span class="nav-text">1.Low-Rank Adaptation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">8.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach"><span class="nav-number">8.2.</span> <span class="nav-text">Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experiments"><span class="nav-number">8.3.</span> <span class="nav-text">Experiments</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Diffusion"><span class="nav-number">9.</span> <span class="nav-text">2.Diffusion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models"><span class="nav-number">10.</span> <span class="nav-text">3.High-Resolution Image Synthesis with Latent Diffusion Models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction-1"><span class="nav-number">10.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Related-work"><span class="nav-number">10.2.</span> <span class="nav-text">Related work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Method"><span class="nav-number">10.3.</span> <span class="nav-text">Method</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results"><span class="nav-number">10.4.</span> <span class="nav-text">Results</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-VQGAN-23"><span class="nav-number">11.</span> <span class="nav-text">4. VQGAN 23</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-DoRA-Weight-Decomposed-Low-Rank-Adaptation"><span class="nav-number">12.</span> <span class="nav-text">6.DoRA: Weight-Decomposed Low-Rank Adaptation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Background%EF%BC%9A"><span class="nav-number">12.1.</span> <span class="nav-text">Background：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Method-1"><span class="nav-number">12.2.</span> <span class="nav-text">Method</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reading-List"><span class="nav-number">12.3.</span> <span class="nav-text">Reading List:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-VeRA-VECTOR-BASED-RANDOM-MATRIX-ADAPTATION"><span class="nav-number">13.</span> <span class="nav-text">7. VeRA: VECTOR-BASED RANDOM MATRIX ADAPTATION</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-VL-BART"><span class="nav-number">14.</span> <span class="nav-text">8. VL-BART</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Readlist"><span class="nav-number">14.1.</span> <span class="nav-text">Readlist</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-Weight-Normalization"><span class="nav-number">15.</span> <span class="nav-text">9. Weight Normalization</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Yifan</p>
+  <div class="site-description" itemprop="description">君を想いながら ひとり歩いています 流るる雨のごとく 流るる花のごとく</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yifan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Static-Site on Yifan's Tech Blog</title><link>https://yifan1209.github.io/tags/static-site/</link><description>Recent content in Static-Site on Yifan's Tech Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 30 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://yifan1209.github.io/tags/static-site/index.xml" rel="self" type="application/rss+xml"/><item><title>How to Use Hexo and NexT Theme</title><link>https://yifan1209.github.io/post/hexo-next-guide/</link><pubDate>Thu, 30 Nov 2023 00:00:00 +0000</pubDate><guid>https://yifan1209.github.io/post/hexo-next-guide/</guid><description>
+ &lt;blockquote&gt;
+ &lt;p&gt;This blog has since migrated to Hugo + Stack theme. Keeping this as a record of the old setup.&lt;/p&gt;
+
+ &lt;/blockquote&gt;
+&lt;h2 id="hexo-基本命令"&gt;&lt;a href="#hexo-%e5%9f%ba%e6%9c%ac%e5%91%bd%e4%bb%a4" class="header-anchor"&gt;&lt;/a&gt;Hexo 基本命令
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo init &lt;span style="color:#75715e"&gt;# 初始化项目&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo new &lt;span style="color:#e6db74"&gt;&amp;#34;标题&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 新建文章&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo server &lt;span style="color:#75715e"&gt;# 本地预览 http://localhost:4000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo generate &lt;span style="color:#75715e"&gt;# 生成静态文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo deploy &lt;span style="color:#75715e"&gt;# 部署&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="连接-github-pages"&gt;&lt;a href="#%e8%bf%9e%e6%8e%a5-github-pages" class="header-anchor"&gt;&lt;/a&gt;连接 GitHub Pages
+&lt;/h2&gt;&lt;p&gt;在 &lt;code&gt;_config.yml&lt;/code&gt; 中配置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;deploy&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;type&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;git&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;repository&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;git@github.com:yourname/yourname.github.io.git&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;branch&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;master&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装部署插件并部署：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install hexo-deployer-git --save
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo clean &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; hexo g &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; hexo d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="front-matter"&gt;&lt;a href="#front-matter" class="header-anchor"&gt;&lt;/a&gt;Front-Matter
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;title&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;文章标题&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;date&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;2023-11-30&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;categories&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;分类名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;tags&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;tag1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="添加-categories--tags-页面"&gt;&lt;a href="#%e6%b7%bb%e5%8a%a0-categories--tags-%e9%a1%b5%e9%9d%a2" class="header-anchor"&gt;&lt;/a&gt;添加 categories / tags 页面
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo new page categories
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo new page tags
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;分别在生成的 &lt;code&gt;index.md&lt;/code&gt; 中添加 &lt;code&gt;type: &amp;quot;categories&amp;quot;&lt;/code&gt; 和 &lt;code&gt;type: &amp;quot;tags&amp;quot;&lt;/code&gt;。&lt;/p&gt;</description></item></channel></rss>

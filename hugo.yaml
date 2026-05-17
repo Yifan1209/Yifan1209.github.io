@@ -1,0 +1,83 @@
+baseURL: "https://yifan1209.github.io/"
+locale: en-us
+title: Yifan's Tech Blog
+theme: hugo-theme-stack
+
+defaultContentLanguage: en
+
+pagination:
+  pagerSize: 10
+
+taxonomies:
+  category: categories
+  tag: tags
+  series: series
+
+params:
+  mainSections:
+    - post
+  rssFullContent: true
+
+  sidebar:
+    compact: false
+    avatar: ""
+
+  article:
+    math: true
+    toc: true
+    readingTime: true
+    headingAnchor: true
+    license:
+      enabled: false
+
+  colorScheme:
+    toggle: true
+    default: auto
+
+  footer:
+    since: 2024
+    customText: ""
+
+  comments:
+    enabled: false
+
+  widgets:
+    homepage:
+      - type: search
+      - type: categories
+        params:
+          limit: 10
+      - type: tag-cloud
+        params:
+          limit: 20
+    page:
+      - type: toc
+
+menu:
+  main:
+    - name: Home
+      url: /
+      weight: 1
+      params:
+        icon: home
+    - name: Archives
+      url: /archives/
+      weight: 2
+      params:
+        icon: archives
+    - name: Categories
+      url: /categories/
+      weight: 3
+      params:
+        icon: categories
+    - name: Tags
+      url: /tags/
+      weight: 4
+      params:
+        icon: tag
+    - name: GitHub
+      url: https://github.com/Yifan1209
+      weight: 5
+      params:
+        icon: brand-github
+        newTab: true

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Yifan's Tech Blog</title><link>https://yifan1209.github.io/</link><description>Recent content on Yifan's Tech Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 14 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://yifan1209.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>LLM Notes</title><link>https://yifan1209.github.io/post/llm-notes/</link><pubDate>Sat, 14 Sep 2024 00:00:00 +0000</pubDate><guid>https://yifan1209.github.io/post/llm-notes/</guid><description>&lt;p&gt;这篇是关于LLM的一些笔记和乱七八糟想法，未必正确。&lt;/p&gt;
+&lt;p&gt;OpenAI一开始就是大佬云集+资金充裕，想要搞出通用人工智能的。看了下GPT-1的几个作者，Alec Radford，他也是DCGAN的一作，15年发表，15k引用。&lt;/p&gt;
+&lt;p&gt;还有BERT一开始比GPT-1火，看有人说是因为BERT的完形填空确实比GPT-1的生成要简单，所以一开始BERT会有更好的效果&lt;/p&gt;
+&lt;p&gt;BERT是在拟合 $P(x_i|x_1, &amp;hellip;,x_{i-1}, x_{i+1},&amp;hellip;,x_n)$，GPT是 $P(x_i|x_1, &amp;hellip;,x_{i-1})$&lt;/p&gt;
+&lt;p&gt;所以对大量文本本身的学习导致了GPT的很强的few-shot, zero-shot泛化能力。GPT1到3里面，GPT1即提出了zero-shot能力，GPT2开始增加规模，Scaling Laws讨论了模型规模对loss的影响，总之openai一直是在做同一件事。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;let&amp;rsquo;s think step by step&lt;/strong&gt; 不是玄学，它相当于告诉模型需要一步一步推理，不要一下生成答案。比如让模型step by step地回答&amp;quot;去阿拉斯加旅游需要做哪些准备&amp;quot;，模型就会先输出&amp;quot;纬度高&amp;quot;→&amp;ldquo;天气冷&amp;rdquo;→&amp;ldquo;带上羽绒服&amp;rdquo;，而不是直接给一个笼统的答案。这个事情对于人类而言是常识，但让模型算Dijkstra就不行了。&lt;/p&gt;
+&lt;h2 id="scaling-laws-for-neural-language-models"&gt;&lt;a href="#scaling-laws-for-neural-language-models" class="header-anchor"&gt;&lt;/a&gt;Scaling Laws for Neural Language Models
+&lt;/h2&gt;&lt;p&gt;一个对LLM的理论研究，结论就是大力出奇迹。大模型和大量数据才能得到更好的效果。&lt;/p&gt;
+&lt;h3 id="核心结论"&gt;&lt;a href="#%e6%a0%b8%e5%bf%83%e7%bb%93%e8%ae%ba" class="header-anchor"&gt;&lt;/a&gt;核心结论
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;模型表现和规模强相关，和模型的shape弱相关：规模包括模型参数量N（不包括embedding）、数据集大小D和计算量C&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;幂方法则：对于N、D、C三个因素，模型表现和每个因素成&lt;strong&gt;幂方关系&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scaling laws curves" class="gallery-image" data-flex-basis="529px" data-flex-grow="220" height="429" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019030303641.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20231019030303641_hu_f83da661e396de4d.png 800w, https://yifan1209.github.io/post/llm-notes/image-20231019030303641.png 946w" width="946"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;数据和模型参数量的比例关系大致为 $N^{0.74}/D$，也就是&lt;strong&gt;模型参数增大8倍，数据也需要增大5倍&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Sample efficiency：大模型能在更少的step内达到相同的性能&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="codex"&gt;&lt;a href="#codex" class="header-anchor"&gt;&lt;/a&gt;Codex
+&lt;/h2&gt;&lt;p&gt;基于GPT的模型架构，在GitHub上微调，可以用来编写Python代码。&lt;/p&gt;
+&lt;p&gt;目标函数没有使用BLEU，而是使用&lt;strong&gt;pass@k&lt;/strong&gt;来评估模型，即生成n个输出（n&amp;gt;k），从中随机抽取k个，输出通过单元测试的概率。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="pass@k" class="gallery-image" data-flex-basis="863px" data-flex-grow="359" height="82" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019032958867.png" width="295"&gt;&lt;/p&gt;
+&lt;h2 id="instructgpt"&gt;&lt;a href="#instructgpt" class="header-anchor"&gt;&lt;/a&gt;InstructGPT
+&lt;/h2&gt;&lt;p&gt;无论是&amp;quot;一个问题后面接一个回答&amp;quot;，还是&amp;quot;一个问题后面接另一个问题&amp;quot;，都是训练语料中可能经常出现的&lt;strong&gt;模式&lt;/strong&gt;。这就是问题所在——如何让经过大规模语料预训练的模型&lt;strong&gt;在输出时符合人类的期待&lt;/strong&gt;？&lt;/p&gt;
+&lt;p&gt;&lt;img alt="InstructGPT" class="gallery-image" data-flex-basis="404px" data-flex-grow="168" height="677" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/v2-5e303a6c65774679128547b38daba755_r.jpg" srcset="https://yifan1209.github.io/post/llm-notes/v2-5e303a6c65774679128547b38daba755_r_hu_54ab0fad4ce8b25b.jpg 800w, https://yifan1209.github.io/post/llm-notes/v2-5e303a6c65774679128547b38daba755_r.jpg 1140w" width="1140"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;V0&lt;/strong&gt;（GPT-3）→ 人工构造少量数据 fine-tune → &lt;strong&gt;V1&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;让V1对同一prompt做多个输出，人工排序，训练一个&lt;strong&gt;RM&lt;/strong&gt;（reward model）&lt;/li&gt;
+&lt;li&gt;用RL不断优化V1，得到&lt;strong&gt;V2&lt;/strong&gt;（InstructGPT）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="t5-google"&gt;&lt;a href="#t5-google" class="header-anchor"&gt;&lt;/a&gt;T5 (Google)
+&lt;/h2&gt;&lt;p&gt;Text-to-Text Transfer Transformer：所有NLP任务统一为text-to-text格式，一个模型干所有任务。&lt;/p&gt;
+&lt;p&gt;提出了C4 corpus。模型为encoder-decoder结构，参数量约为BERT两倍。&lt;/p&gt;
+&lt;p&gt;BERT只适合做分类，不适合做生成；T5则两者都能做。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="T5 architecture" class="gallery-image" data-flex-basis="563px" data-flex-grow="234" height="350" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019020243511.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20231019020243511_hu_c61a203e6fb94f7b.png 800w, https://yifan1209.github.io/post/llm-notes/image-20231019020243511.png 822w" width="822"&gt;&lt;/p&gt;
+&lt;h2 id="switch-transformers"&gt;&lt;a href="#switch-transformers" class="header-anchor"&gt;&lt;/a&gt;Switch Transformers
+&lt;/h2&gt;&lt;p&gt;1.6万亿参数，使用&lt;strong&gt;Mixture of Experts（MoE）&lt;/strong&gt;，只激活部分参数，所以&lt;strong&gt;算起来还比较快&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Switch Transformer MoE" class="gallery-image" data-flex-basis="444px" data-flex-grow="185" height="440" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/114514.jpg" srcset="https://yifan1209.github.io/post/llm-notes/114514_hu_2f9d90ea6b5f7079.jpg 800w, https://yifan1209.github.io/post/llm-notes/114514.jpg 814w" width="814"&gt;&lt;/p&gt;
+&lt;p&gt;将FFN替换为多个Expert，每个token只路由到一个Expert（sparse routing），减少计算量。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="data sharding" class="gallery-image" data-flex-basis="422px" data-flex-grow="176" height="505" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019023911359.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20231019023911359_hu_39bda63dc329b5fa.png 800w, https://yifan1209.github.io/post/llm-notes/image-20231019023911359.png 890w" width="890"&gt;&lt;/p&gt;
+&lt;h2 id="1-lora-low-rank-adaptation"&gt;&lt;a href="#1-lora-low-rank-adaptation" class="header-anchor"&gt;&lt;/a&gt;1. LoRA (Low-Rank Adaptation)
+&lt;/h2&gt;&lt;p&gt;冻结预训练权重，向Transformer每层注入可训练的低秩矩阵，大幅减少下游任务的可训练参数量。&lt;/p&gt;
+&lt;p&gt;优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个大模型 + 多个小LoRA模块，对应不同任务&lt;/li&gt;
+&lt;li&gt;训练更快&lt;/li&gt;
+&lt;li&gt;推理无额外延迟（可以将LoRA矩阵合并进原始权重）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="LoRA diagram" class="gallery-image" data-flex-basis="3476px" data-flex-grow="1448" height="62" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240206123313894.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240206123313894_hu_c38276e01b75a440.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240206123313894.png 898w" width="898"&gt;&lt;/p&gt;
+&lt;p&gt;将 $\Delta W$ 表示为 $BA$，其中 A 用随机高斯初始化，B=0，训练过程中只更新A和B。&lt;/p&gt;
+&lt;p&gt;$$W&amp;rsquo; = W + \Delta W = W + BA$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="LoRA math" class="gallery-image" data-flex-basis="1649px" data-flex-grow="687" height="94" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240206123358562.png" width="646"&gt;&lt;/p&gt;
+&lt;h2 id="2-diffusion-models"&gt;&lt;a href="#2-diffusion-models" class="header-anchor"&gt;&lt;/a&gt;2. Diffusion Models
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Deep Unsupervised Learning using Nonequilibrium Thermodynamics&lt;/strong&gt;：用物理扩散过程建模，定义了前向加噪过程和反向去噪过程。&lt;/p&gt;
+&lt;h2 id="3-latent-diffusion-models-stable-diffusion"&gt;&lt;a href="#3-latent-diffusion-models-stable-diffusion" class="header-anchor"&gt;&lt;/a&gt;3. Latent Diffusion Models (Stable Diffusion)
+&lt;/h2&gt;&lt;p&gt;解决原始Diffusion计算成本高的问题，分两阶段：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;训练autoencoder，将图像压缩到低维latent space&lt;/li&gt;
+&lt;li&gt;在latent space上训练Diffusion model&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;用cross-attention实现条件控制（text-to-image）。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="LDM architecture" class="gallery-image" data-flex-basis="392px" data-flex-grow="163" height="568" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240219224917139.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240219224917139_hu_c294bc976af9475e.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240219224917139.png 928w" width="928"&gt;&lt;/p&gt;
+&lt;p&gt;Downsampling factor 4~16 最优：太小给Diffusion太多负担，太大则损失信息。&lt;/p&gt;
+&lt;h2 id="6-dora-weight-decomposed-low-rank-adaptation"&gt;&lt;a href="#6-dora-weight-decomposed-low-rank-adaptation" class="header-anchor"&gt;&lt;/a&gt;6. DoRA: Weight-Decomposed Low-Rank Adaptation
+&lt;/h2&gt;&lt;p&gt;研究发现：finetune时权重的magnitude和direction变化关系不大，而LoRA基本上是正比的（方向变化和幅度变化高度相关）。DoRA将权重分解为magnitude和direction分别优化，使其更像finetune。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="DoRA analysis" class="gallery-image" data-flex-basis="757px" data-flex-grow="315" height="396" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240221204738264.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240221204738264_hu_a1fe22e040803cc4.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240221204738264.png 1250w" width="1250"&gt;&lt;/p&gt;
+&lt;p&gt;$$W = m \cdot \frac{V}{||V||_c}, \quad m = ||W_0||_c, \quad V \text{ trained with LoRA}$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="DoRA formula" class="gallery-image" data-flex-basis="1394px" data-flex-grow="581" height="106" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240221221210949.png" width="616"&gt;&lt;/p&gt;
+&lt;h2 id="7-vera-vector-based-random-matrix-adaptation"&gt;&lt;a href="#7-vera-vector-based-random-matrix-adaptation" class="header-anchor"&gt;&lt;/a&gt;7. VeRA: Vector-Based Random Matrix Adaptation
+&lt;/h2&gt;&lt;p&gt;&lt;img alt="VeRA" class="gallery-image" data-flex-basis="1812px" data-flex-grow="755" height="94" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240222041039084.png" width="710"&gt;&lt;/p&gt;
+&lt;p&gt;A和B是随机初始化、固定的矩阵；只训练对角阵b和d，参数量更少。&lt;/p&gt;
+&lt;h2 id="9-weight-normalization"&gt;&lt;a href="#9-weight-normalization" class="header-anchor"&gt;&lt;/a&gt;9. Weight Normalization
+&lt;/h2&gt;&lt;p&gt;将权重向量分解为方向和幅度分别参数化，加速训练收敛。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="weight norm" class="gallery-image" data-flex-basis="763px" data-flex-grow="318" height="444" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240223020959760.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240223020959760_hu_f151e3654c864a73.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240223020959760.png 1412w" width="1412"&gt;&lt;/p&gt;</description></item><item><title>ML Basic Knowledge Review</title><link>https://yifan1209.github.io/post/ml-review/</link><pubDate>Sat, 14 Sep 2024 00:00:00 +0000</pubDate><guid>https://yifan1209.github.io/post/ml-review/</guid><description>&lt;h2 id="multi-head-attention-代码"&gt;&lt;a href="#multi-head-attention-%e4%bb%a3%e7%a0%81" class="header-anchor"&gt;&lt;/a&gt;Multi-Head Attention 代码
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; torch
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; torch.nn &lt;span style="color:#66d9ef"&gt;as&lt;/span&gt; nn
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; torch.nn.functional &lt;span style="color:#66d9ef"&gt;as&lt;/span&gt; F
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; math
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;MultiHeadAttention&lt;/span&gt;(nn&lt;span style="color:#f92672"&gt;.&lt;/span&gt;Module):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;__init__&lt;/span&gt;(self, d_model, num_heads):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; super()&lt;span style="color:#f92672"&gt;.&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;__init__&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;num_heads &lt;span style="color:#f92672"&gt;=&lt;/span&gt; num_heads
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;d_model &lt;span style="color:#f92672"&gt;=&lt;/span&gt; d_model
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;assert&lt;/span&gt; d_model &lt;span style="color:#f92672"&gt;%&lt;/span&gt; num_heads &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;d_k &lt;span style="color:#f92672"&gt;=&lt;/span&gt; d_model &lt;span style="color:#f92672"&gt;//&lt;/span&gt; num_heads
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_q &lt;span style="color:#f92672"&gt;=&lt;/span&gt; nn&lt;span style="color:#f92672"&gt;.&lt;/span&gt;Linear(d_model, d_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_k &lt;span style="color:#f92672"&gt;=&lt;/span&gt; nn&lt;span style="color:#f92672"&gt;.&lt;/span&gt;Linear(d_model, d_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_v &lt;span style="color:#f92672"&gt;=&lt;/span&gt; nn&lt;span style="color:#f92672"&gt;.&lt;/span&gt;Linear(d_model, d_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_o &lt;span style="color:#f92672"&gt;=&lt;/span&gt; nn&lt;span style="color:#f92672"&gt;.&lt;/span&gt;Linear(d_model, d_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;scaled_dot_product_attention&lt;/span&gt;(self, Q, K, V, mask&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;None&lt;/span&gt;):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; QK &lt;span style="color:#f92672"&gt;=&lt;/span&gt; torch&lt;span style="color:#f92672"&gt;.&lt;/span&gt;matmul(Q, K&lt;span style="color:#f92672"&gt;.&lt;/span&gt;transpose(&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)) &lt;span style="color:#f92672"&gt;/&lt;/span&gt; math&lt;span style="color:#f92672"&gt;.&lt;/span&gt;sqrt(self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;d_k)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; mask &lt;span style="color:#f92672"&gt;is&lt;/span&gt; &lt;span style="color:#f92672"&gt;not&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;None&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; QK &lt;span style="color:#f92672"&gt;=&lt;/span&gt; QK&lt;span style="color:#f92672"&gt;.&lt;/span&gt;masked_fill(mask &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, float(&lt;span style="color:#e6db74"&gt;&amp;#39;-inf&amp;#39;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; weights &lt;span style="color:#f92672"&gt;=&lt;/span&gt; F&lt;span style="color:#f92672"&gt;.&lt;/span&gt;softmax(QK, dim&lt;span style="color:#f92672"&gt;=-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; torch&lt;span style="color:#f92672"&gt;.&lt;/span&gt;matmul(weights, V), weights
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;split_heads&lt;/span&gt;(self, x, batch_size):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; x&lt;span style="color:#f92672"&gt;.&lt;/span&gt;view(batch_size, &lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;num_heads, self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;d_k)&lt;span style="color:#f92672"&gt;.&lt;/span&gt;transpose(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;forward&lt;/span&gt;(self, q, k, v, mask&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;None&lt;/span&gt;):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; batch_size &lt;span style="color:#f92672"&gt;=&lt;/span&gt; q&lt;span style="color:#f92672"&gt;.&lt;/span&gt;size(&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; q &lt;span style="color:#f92672"&gt;=&lt;/span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;split_heads(self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_q(q), batch_size)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; k &lt;span style="color:#f92672"&gt;=&lt;/span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;split_heads(self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_k(k), batch_size)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; v &lt;span style="color:#f92672"&gt;=&lt;/span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;split_heads(self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_v(v), batch_size)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; scores, _ &lt;span style="color:#f92672"&gt;=&lt;/span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;scaled_dot_product_attention(q, k, v, mask)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; concat &lt;span style="color:#f92672"&gt;=&lt;/span&gt; scores&lt;span style="color:#f92672"&gt;.&lt;/span&gt;transpose(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;,&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;)&lt;span style="color:#f92672"&gt;.&lt;/span&gt;contiguous()&lt;span style="color:#f92672"&gt;.&lt;/span&gt;view(batch_size, &lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;d_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;W_o(concat)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;面试技巧：一次大矩阵乘法比多次小矩阵乘法快，可以用一个Linear层同时生成Q、K、V：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;qkv &lt;span style="color:#f92672"&gt;=&lt;/span&gt; nn&lt;span style="color:#f92672"&gt;.&lt;/span&gt;Linear(d_model, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt; d_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;qkv &lt;span style="color:#f92672"&gt;=&lt;/span&gt; self&lt;span style="color:#f92672"&gt;.&lt;/span&gt;qkv(x)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;q, k, v &lt;span style="color:#f92672"&gt;=&lt;/span&gt; torch&lt;span style="color:#f92672"&gt;.&lt;/span&gt;split(qkv, d_model, dim&lt;span style="color:#f92672"&gt;=-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="lda-linear-discriminant-analysis"&gt;&lt;a href="#lda-linear-discriminant-analysis" class="header-anchor"&gt;&lt;/a&gt;LDA (Linear Discriminant Analysis)
+&lt;/h2&gt;&lt;p&gt;将数据投影到一条线上，选择使类内方差最小、类间方差最大的方向。&lt;/p&gt;
+&lt;p&gt;$$J = \frac{w^T S_b w}{w^T S_w w}$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="LDA" class="gallery-image" data-flex-basis="503px" data-flex-grow="209" height="207" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207183825294.png" width="434"&gt;&lt;/p&gt;
+&lt;h2 id="linear-regression"&gt;&lt;a href="#linear-regression" class="header-anchor"&gt;&lt;/a&gt;Linear Regression
+&lt;/h2&gt;&lt;p&gt;基本假设：自变量为线性，自变量之间独立，误差独立，误差方差恒定，误差服从正态分布。&lt;/p&gt;
+&lt;p&gt;$$w = (X^TX)^{-1}X^Ty$$&lt;/p&gt;
+&lt;p&gt;$X^TX$ 不可逆时：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用 &lt;strong&gt;SVD&lt;/strong&gt;：$w = V\Sigma^{-1}U^Ty$（即X的伪逆）&lt;/li&gt;
+&lt;li&gt;用 &lt;strong&gt;L2正则化&lt;/strong&gt;：$(X^TX + \lambda I)w = X^Ty$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt="SVD" class="gallery-image" data-flex-basis="679px" data-flex-grow="283" height="1045" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/cover.png" srcset="https://yifan1209.github.io/post/ml-review/cover_hu_7924634d272df3c8.png 800w, https://yifan1209.github.io/post/ml-review/cover_hu_bb472487e5de7cc8.png 1600w, https://yifan1209.github.io/post/ml-review/cover_hu_948b60f32eadf476.png 2400w, https://yifan1209.github.io/post/ml-review/cover.png 2960w" width="2960"&gt;&lt;/p&gt;
+&lt;h2 id="logistic-regression"&gt;&lt;a href="#logistic-regression" class="header-anchor"&gt;&lt;/a&gt;Logistic Regression
+&lt;/h2&gt;&lt;p&gt;优化cross entropy等价于优化NLL，两者是从信息论和概率论两个角度看同一个问题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;用MSE做Logistic Regression是convex problem吗？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="logistic regression MSE" class="gallery-image" data-flex-basis="447px" data-flex-grow="186" height="430" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231218154835882.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231218154835882_hu_6ade88fd57b41ac.png 800w, https://yifan1209.github.io/post/ml-review/image-20231218154835882.png 801w" width="801"&gt;&lt;/p&gt;
+&lt;h2 id="kmeans"&gt;&lt;a href="#kmeans" class="header-anchor"&gt;&lt;/a&gt;Kmeans
+&lt;/h2&gt;&lt;p&gt;缺点：需要人为设定K；对初始值和异常值敏感；假定每类为球形；不能处理离散值。&lt;/p&gt;
+&lt;p&gt;选择K值：手肘法&lt;/p&gt;
+&lt;h2 id="gmm"&gt;&lt;a href="#gmm" class="header-anchor"&gt;&lt;/a&gt;GMM
+&lt;/h2&gt;&lt;p&gt;GMM的EM与Kmeans的区别：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;E步：计算每个点属于每类的&lt;strong&gt;概率&lt;/strong&gt;（软分配），而非直接分类&lt;/p&gt;
+&lt;p&gt;&lt;img alt="GMM E step" class="gallery-image" data-flex-basis="1193px" data-flex-grow="497" height="118" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207052602215.png" width="587"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;M步：按概率加权计算新的分布参数&lt;/p&gt;
+&lt;p&gt;&lt;img alt="GMM M step" class="gallery-image" data-flex-basis="1944px" data-flex-grow="810" height="110" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207052741751.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231207052741751_hu_eac6b81c4ef5eaa3.png 800w, https://yifan1209.github.io/post/ml-review/image-20231207052741751.png 891w" width="891"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;kmeans是硬分配，GMM是软分配；kmeans相当于认为各类分布均为单位方差高斯分布。&lt;/p&gt;
+&lt;h2 id="生成模型"&gt;&lt;a href="#%e7%94%9f%e6%88%90%e6%a8%a1%e5%9e%8b" class="header-anchor"&gt;&lt;/a&gt;生成模型
+&lt;/h2&gt;&lt;p&gt;GMM、HMM、朴素贝叶斯、贝叶斯网络、GAN、VAE、GPT、DALL-E……&lt;/p&gt;
+&lt;p&gt;生成模型学习 $P(x,y)$，判别模型学习 $P(y|x)$。&lt;/p&gt;
+&lt;h2 id="ridge--lassol2--l1"&gt;&lt;a href="#ridge--lassol2--l1" class="header-anchor"&gt;&lt;/a&gt;Ridge &amp;amp; Lasso（L2 &amp;amp; L1）
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;L2（Ridge）&lt;/strong&gt;：参数先验为高斯分布&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;L1（Lasso）&lt;/strong&gt;：参数先验为拉普拉斯分布，产生稀疏解&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为什么L1稀疏：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="L1 sparsity" class="gallery-image" data-flex-basis="698px" data-flex-grow="291" height="388" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231218155615368.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231218155615368_hu_b62a259c082b9e62.png 800w, https://yifan1209.github.io/post/ml-review/image-20231218155615368.png 1130w" width="1130"&gt;&lt;/p&gt;
+&lt;h2 id="数据不平衡"&gt;&lt;a href="#%e6%95%b0%e6%8d%ae%e4%b8%8d%e5%b9%b3%e8%a1%a1" class="header-anchor"&gt;&lt;/a&gt;数据不平衡
+&lt;/h2&gt;&lt;p&gt;假设正例少、负例多：增大正例采样率、舍弃部分负例、调整阈值、使用XGBoost等集成学习、生成正例、使用precision@k等指标。&lt;/p&gt;
+&lt;h2 id="集成学习"&gt;&lt;a href="#%e9%9b%86%e6%88%90%e5%ad%a6%e4%b9%a0" class="header-anchor"&gt;&lt;/a&gt;集成学习
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Bagging&lt;/strong&gt;：并行，如Random Forest&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bagging" class="gallery-image" data-flex-basis="648px" data-flex-grow="270" height="263" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207165923309.png" width="711"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Boosting&lt;/strong&gt;：串行，如XGBoost&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="信息论各种熵"&gt;&lt;a href="#%e4%bf%a1%e6%81%af%e8%ae%ba%e5%90%84%e7%a7%8d%e7%86%b5" class="header-anchor"&gt;&lt;/a&gt;信息论：各种熵
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;自信息&lt;/strong&gt;：$-\log P(x)$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;香农熵&lt;/strong&gt;：$H(X) = -\sum P(x)\log P(x)$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="entropy" class="gallery-image" data-flex-basis="1208px" data-flex-grow="503" height="229" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207044108132.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231207044108132_hu_f731b0895c942763.png 800w, https://yifan1209.github.io/post/ml-review/image-20231207044108132.png 1153w" width="1153"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;KL散度&lt;/strong&gt;：$D_{KL}(P||Q) = H(P,Q) - H(P)$，衡量两个分布的差异，不对称&lt;/p&gt;
+&lt;p&gt;&lt;img alt="KL divergence" class="gallery-image" data-flex-basis="640px" data-flex-grow="266" height="442" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207044341480.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231207044341480_hu_25cb8525585477c7.png 800w, https://yifan1209.github.io/post/ml-review/image-20231207044341480.png 1179w" width="1179"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;交叉熵&lt;/strong&gt;：$H(P,Q) = -\sum P(x)\log Q(x)$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="cross entropy" class="gallery-image" data-flex-basis="586px" data-flex-grow="244" height="463" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207044440926.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231207044440926_hu_5b1cd6f476617189.png 800w, https://yifan1209.github.io/post/ml-review/image-20231207044440926.png 1132w" width="1132"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="评价指标"&gt;&lt;a href="#%e8%af%84%e4%bb%b7%e6%8c%87%e6%a0%87" class="header-anchor"&gt;&lt;/a&gt;评价指标
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Precision&lt;/strong&gt;（查准率）：预测为正中真正为正的比例，减少&amp;quot;存伪&amp;quot;错误&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Recall&lt;/strong&gt;（查全率）：实际为正中被预测为正的比例，减少&amp;quot;去真&amp;quot;错误&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;F1&lt;/strong&gt;：Precision和Recall的调和平均&lt;/p&gt;
+&lt;p&gt;&lt;img alt="F1" class="gallery-image" data-flex-basis="850px" data-flex-grow="354" height="103" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231203151426226.png" width="365"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;AUC-ROC&lt;/strong&gt;：ROC曲线（TPR vs FPR）下面积&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;排序指标：MAP、MRR、NDCG&lt;/p&gt;
+&lt;h2 id="深度学习训练"&gt;&lt;a href="#%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e8%ae%ad%e7%bb%83" class="header-anchor"&gt;&lt;/a&gt;深度学习训练
+&lt;/h2&gt;&lt;h3 id="momentum--adam"&gt;&lt;a href="#momentum--adam" class="header-anchor"&gt;&lt;/a&gt;Momentum &amp;amp; Adam
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Momentum&lt;/strong&gt;：移动指数加权平均&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;RMSProp&lt;/strong&gt;：梯度按元素平方做指数加权平均，解决不同参数梯度量级差异大的问题&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Adam&lt;/strong&gt;：Momentum + RMSProp&lt;/p&gt;
+&lt;p&gt;&lt;img alt="adam" class="gallery-image" data-flex-basis="265px" data-flex-grow="110" height="739" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231204201808637.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231204201808637_hu_541d9ef88c3dc3bf.png 800w, https://yifan1209.github.io/post/ml-review/image-20231204201808637.png 819w" width="819"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="梯度爆炸消失"&gt;&lt;a href="#%e6%a2%af%e5%ba%a6%e7%88%86%e7%82%b8%e6%b6%88%e5%a4%b1" class="header-anchor"&gt;&lt;/a&gt;梯度爆炸/消失
+&lt;/h3&gt;&lt;p&gt;导数 &amp;gt; 1 → 梯度爆炸；导数 &amp;lt; 1 → 梯度消失。&lt;/p&gt;
+&lt;p&gt;解决方案：正则化、换激活函数（ReLU）、梯度裁剪、残差连接。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;BatchNorm&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;img alt="BN" class="gallery-image" data-flex-basis="661px" data-flex-grow="275" height="546" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231207051217778.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231207051217778_hu_645d188819fdc1f4.png 800w, https://yifan1209.github.io/post/ml-review/image-20231207051217778.png 1505w" width="1505"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Residual&lt;/strong&gt;：解决梯度消失/爆炸和退化问题。&lt;/p&gt;
+&lt;h3 id="bn-vs-ln"&gt;&lt;a href="#bn-vs-ln" class="header-anchor"&gt;&lt;/a&gt;BN vs LN
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;BN&lt;/strong&gt;：在batch维度做归一化；batch size小时效果差；推理时用running mean/var。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;LN&lt;/strong&gt;：在单个样本内做归一化；不依赖batch size；Transformer使用LN的原因：NLP中batch内不同位置的token相关性强，不满足BN的独立同分布假设。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="LN vs BN" class="gallery-image" data-flex-basis="939px" data-flex-grow="391" height="184" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/v2-3243c53e7d211b4c463b87f9b2f64aa4_720w.webp" width="720"&gt;&lt;/p&gt;
+&lt;h2 id="transformer-八股"&gt;&lt;a href="#transformer-%e5%85%ab%e8%82%a1" class="header-anchor"&gt;&lt;/a&gt;Transformer 八股
+&lt;/h2&gt;&lt;h3 id="attention"&gt;&lt;a href="#attention" class="header-anchor"&gt;&lt;/a&gt;Attention
+&lt;/h3&gt;&lt;p&gt;$$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$&lt;/p&gt;
+&lt;p&gt;Scale为什么是 $\sqrt{d_k}$：维度增大时点积方差增大，scale防止softmax进入饱和区导致梯度消失。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="attention" class="gallery-image" data-flex-basis="1410px" data-flex-grow="587" height="97" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231217034203052.png" width="570"&gt;&lt;/p&gt;
+&lt;h3 id="multi-head-attention"&gt;&lt;a href="#multi-head-attention" class="header-anchor"&gt;&lt;/a&gt;Multi-Head Attention
+&lt;/h3&gt;&lt;p&gt;多个头形成多个子空间，让模型关注不同方面的信息，类比CNN中的多个卷积核。&lt;/p&gt;
+&lt;h3 id="encoder"&gt;&lt;a href="#encoder" class="header-anchor"&gt;&lt;/a&gt;Encoder
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;残差连接：防止退化，灵感来源于LSTM控制门&lt;/li&gt;
+&lt;li&gt;Add &amp;amp; Norm：先Add后Norm&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="decoder"&gt;&lt;a href="#decoder" class="header-anchor"&gt;&lt;/a&gt;Decoder
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Masked self-attention：mask掉当前位置之后的所有token&lt;/li&gt;
+&lt;li&gt;Cross-attention：Q来自decoder，K/V来自encoder输出&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="为什么transformer效果好"&gt;&lt;a href="#%e4%b8%ba%e4%bb%80%e4%b9%88transformer%e6%95%88%e6%9e%9c%e5%a5%bd" class="header-anchor"&gt;&lt;/a&gt;为什么Transformer效果好
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;能捕捉长距离依赖&lt;/li&gt;
+&lt;li&gt;并行计算，比RNN快&lt;/li&gt;
+&lt;li&gt;网络可以做更深&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="bert"&gt;&lt;a href="#bert" class="header-anchor"&gt;&lt;/a&gt;BERT
+&lt;/h2&gt;&lt;h3 id="byte-pair-encoding-bpe"&gt;&lt;a href="#byte-pair-encoding-bpe" class="header-anchor"&gt;&lt;/a&gt;Byte Pair Encoding (BPE)
+&lt;/h3&gt;&lt;p&gt;迭代合并最高频的字符对；词表大小先增后减，需要取中间值。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="BPE" class="gallery-image" data-flex-basis="419px" data-flex-grow="174" height="470" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/ml-review/image-20231217184751754.png" srcset="https://yifan1209.github.io/post/ml-review/image-20231217184751754_hu_e79bf89bfea0cb5.png 800w, https://yifan1209.github.io/post/ml-review/image-20231217184751754.png 822w" width="822"&gt;&lt;/p&gt;
+&lt;h2 id="快速排序"&gt;&lt;a href="#%e5%bf%ab%e9%80%9f%e6%8e%92%e5%ba%8f" class="header-anchor"&gt;&lt;/a&gt;快速排序
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;quick_sort&lt;/span&gt;(lst, i, j):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; i &lt;span style="color:#f92672"&gt;&amp;gt;=&lt;/span&gt; j:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; pivot, lo, hi &lt;span style="color:#f92672"&gt;=&lt;/span&gt; lst[i], i, j
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;while&lt;/span&gt; i &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; j:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;while&lt;/span&gt; i &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; j &lt;span style="color:#f92672"&gt;and&lt;/span&gt; lst[j] &lt;span style="color:#f92672"&gt;&amp;gt;=&lt;/span&gt; pivot: j &lt;span style="color:#f92672"&gt;-=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; lst[i] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; lst[j]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;while&lt;/span&gt; i &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; j &lt;span style="color:#f92672"&gt;and&lt;/span&gt; lst[i] &lt;span style="color:#f92672"&gt;&amp;lt;=&lt;/span&gt; pivot: i &lt;span style="color:#f92672"&gt;+=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; lst[j] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; lst[i]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; lst[j] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; pivot
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; quick_sort(lst, lo, i&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; quick_sort(lst, i&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, hi)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;为什么快排比堆排快：cache locality。快排访问连续内存，cache命中率高；堆排需要比较数组前后两半，cache miss频繁。&lt;/p&gt;</description></item><item><title>Advanced C++ Notes</title><link>https://yifan1209.github.io/post/advanced-cpp/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0000</pubDate><guid>https://yifan1209.github.io/post/advanced-cpp/</guid><description>&lt;h2 id="stl-containers"&gt;&lt;a href="#stl-containers" class="header-anchor"&gt;&lt;/a&gt;STL Containers
+&lt;/h2&gt;&lt;h3 id="set"&gt;&lt;a href="#set" class="header-anchor"&gt;&lt;/a&gt;set
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;set&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; val &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;val.insert(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;val.erase(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="unordered_map"&gt;&lt;a href="#unordered_map" class="header-anchor"&gt;&lt;/a&gt;unordered_map
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;unordered_map&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;string, &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; umap;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;umap[&lt;span style="color:#e6db74"&gt;&amp;#34;foo&amp;#34;&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;umap[&lt;span style="color:#e6db74"&gt;&amp;#34;bar&amp;#34;&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;20&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;auto&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt; [k, v] &lt;span style="color:#f92672"&gt;:&lt;/span&gt; umap)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; k &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34; &amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; v &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="lambda-expression"&gt;&lt;a href="#lambda-expression" class="header-anchor"&gt;&lt;/a&gt;Lambda Expression
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sort(words.begin(), words.end(),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [](&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; string&lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt; a, &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; string&lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt; b){ &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; a.size() &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; b.size(); });
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;需要 &lt;code&gt;#include &amp;lt;algorithm&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="string"&gt;&lt;a href="#string" class="header-anchor"&gt;&lt;/a&gt;String
+&lt;/h2&gt;&lt;h3 id="substr"&gt;&lt;a href="#substr" class="header-anchor"&gt;&lt;/a&gt;substr
+&lt;/h3&gt;&lt;p&gt;两个参数是起始位置和&lt;strong&gt;长度&lt;/strong&gt;（不是终止位置）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;string s &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;iiyokoiyo&amp;#34;&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;string s1 &lt;span style="color:#f92672"&gt;=&lt;/span&gt; s.substr(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// &amp;#34;iyok&amp;#34;（从1开始，长度4）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;string s2 &lt;span style="color:#f92672"&gt;=&lt;/span&gt; s.substr(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// &amp;#34;iyokoiyo&amp;#34;（从1到结尾）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="const"&gt;&lt;a href="#const" class="header-anchor"&gt;&lt;/a&gt;const
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;*&lt;/span&gt; ptr &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt;i1; &lt;span style="color:#75715e"&gt;// ptr本身可变，*ptr不可变
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;*&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; ptr2 &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt;i3; &lt;span style="color:#75715e"&gt;// ptr2本身不可变，*ptr2可变
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="virtual"&gt;&lt;a href="#virtual" class="header-anchor"&gt;&lt;/a&gt;virtual
+&lt;/h2&gt;&lt;p&gt;C++中要在子类中override函数，父类必须用 &lt;code&gt;virtual&lt;/code&gt; 声明：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Animal&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;virtual&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; speak() { cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;...&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Dog&lt;/span&gt; &lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; Animal {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; speak() &lt;span style="color:#66d9ef"&gt;override&lt;/span&gt; { cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Woof!&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; endl; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Animal&lt;span style="color:#f92672"&gt;*&lt;/span&gt; a &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Dog();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; a&lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt;speak(); &lt;span style="color:#75715e"&gt;// 输出 &amp;#34;Woof!&amp;#34;，而非 &amp;#34;...&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 如果父类没有 virtual，则输出 &amp;#34;...&amp;#34;（静态绑定）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;没有 &lt;code&gt;virtual&lt;/code&gt; 时，通过基类指针调用会走静态绑定，无法实现多态。&lt;/p&gt;
+&lt;h2 id="面试题cheapest-flights-within-k-stops"&gt;&lt;a href="#%e9%9d%a2%e8%af%95%e9%a2%98cheapest-flights-within-k-stops" class="header-anchor"&gt;&lt;/a&gt;面试题：Cheapest Flights Within K Stops
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;findCheapestPrice&lt;/span&gt;(&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; n, vector&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;vector&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&amp;gt;&amp;amp;&lt;/span&gt; flights, &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; src, &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; dst, &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; k) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; vector&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;vector&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&amp;gt;&lt;/span&gt; prices(n, vector&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;(n, INT_MAX));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;auto&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt; f : flights)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; prices[f[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;]][f[&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;]] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; f[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;];
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// BFS with (city, stops, cost)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; queue&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;tuple&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;,&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;,&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&amp;gt;&lt;/span&gt; q;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; q.push({src, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; ans &lt;span style="color:#f92672"&gt;=&lt;/span&gt; INT_MAX;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;while&lt;/span&gt; (&lt;span style="color:#f92672"&gt;!&lt;/span&gt;q.empty()) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;auto&lt;/span&gt; [city, stops, cost] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; q.front(); q.pop();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (city &lt;span style="color:#f92672"&gt;==&lt;/span&gt; dst) { ans &lt;span style="color:#f92672"&gt;=&lt;/span&gt; min(ans, cost); &lt;span style="color:#66d9ef"&gt;continue&lt;/span&gt;; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (stops &lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; k) &lt;span style="color:#66d9ef"&gt;continue&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; next &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; next &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; n; next&lt;span style="color:#f92672"&gt;++&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (prices[city][next] &lt;span style="color:#f92672"&gt;!=&lt;/span&gt; INT_MAX)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; q.push({next, stops&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, cost &lt;span style="color:#f92672"&gt;+&lt;/span&gt; prices[city][next]});
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; ans &lt;span style="color:#f92672"&gt;==&lt;/span&gt; INT_MAX &lt;span style="color:#f92672"&gt;?&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:&lt;/span&gt; ans;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>How to Use Hexo and NexT Theme</title><link>https://yifan1209.github.io/post/hexo-next-guide/</link><pubDate>Thu, 30 Nov 2023 00:00:00 +0000</pubDate><guid>https://yifan1209.github.io/post/hexo-next-guide/</guid><description>
+ &lt;blockquote&gt;
+ &lt;p&gt;This blog has since migrated to Hugo + Stack theme. Keeping this as a record of the old setup.&lt;/p&gt;
+
+ &lt;/blockquote&gt;
+&lt;h2 id="hexo-基本命令"&gt;&lt;a href="#hexo-%e5%9f%ba%e6%9c%ac%e5%91%bd%e4%bb%a4" class="header-anchor"&gt;&lt;/a&gt;Hexo 基本命令
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo init &lt;span style="color:#75715e"&gt;# 初始化项目&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo new &lt;span style="color:#e6db74"&gt;&amp;#34;标题&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 新建文章&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo server &lt;span style="color:#75715e"&gt;# 本地预览 http://localhost:4000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo generate &lt;span style="color:#75715e"&gt;# 生成静态文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo deploy &lt;span style="color:#75715e"&gt;# 部署&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="连接-github-pages"&gt;&lt;a href="#%e8%bf%9e%e6%8e%a5-github-pages" class="header-anchor"&gt;&lt;/a&gt;连接 GitHub Pages
+&lt;/h2&gt;&lt;p&gt;在 &lt;code&gt;_config.yml&lt;/code&gt; 中配置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;deploy&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;type&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;git&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;repository&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;git@github.com:yourname/yourname.github.io.git&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;branch&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;master&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装部署插件并部署：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install hexo-deployer-git --save
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo clean &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; hexo g &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; hexo d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="front-matter"&gt;&lt;a href="#front-matter" class="header-anchor"&gt;&lt;/a&gt;Front-Matter
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;title&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;文章标题&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;date&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;2023-11-30&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;categories&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;分类名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;tags&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;tag1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="添加-categories--tags-页面"&gt;&lt;a href="#%e6%b7%bb%e5%8a%a0-categories--tags-%e9%a1%b5%e9%9d%a2" class="header-anchor"&gt;&lt;/a&gt;添加 categories / tags 页面
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo new page categories
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hexo new page tags
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;分别在生成的 &lt;code&gt;index.md&lt;/code&gt; 中添加 &lt;code&gt;type: &amp;quot;categories&amp;quot;&lt;/code&gt; 和 &lt;code&gt;type: &amp;quot;tags&amp;quot;&lt;/code&gt;。&lt;/p&gt;</description></item></channel></rss>

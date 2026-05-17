@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Diffusion on Yifan's Tech Blog</title><link>https://yifan1209.github.io/tags/diffusion/</link><description>Recent content in Diffusion on Yifan's Tech Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 14 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://yifan1209.github.io/tags/diffusion/index.xml" rel="self" type="application/rss+xml"/><item><title>LLM Notes</title><link>https://yifan1209.github.io/post/llm-notes/</link><pubDate>Sat, 14 Sep 2024 00:00:00 +0000</pubDate><guid>https://yifan1209.github.io/post/llm-notes/</guid><description>&lt;p&gt;这篇是关于LLM的一些笔记和乱七八糟想法，未必正确。&lt;/p&gt;
+&lt;p&gt;OpenAI一开始就是大佬云集+资金充裕，想要搞出通用人工智能的。看了下GPT-1的几个作者，Alec Radford，他也是DCGAN的一作，15年发表，15k引用。&lt;/p&gt;
+&lt;p&gt;还有BERT一开始比GPT-1火，看有人说是因为BERT的完形填空确实比GPT-1的生成要简单，所以一开始BERT会有更好的效果&lt;/p&gt;
+&lt;p&gt;BERT是在拟合 $P(x_i|x_1, &amp;hellip;,x_{i-1}, x_{i+1},&amp;hellip;,x_n)$，GPT是 $P(x_i|x_1, &amp;hellip;,x_{i-1})$&lt;/p&gt;
+&lt;p&gt;所以对大量文本本身的学习导致了GPT的很强的few-shot, zero-shot泛化能力。GPT1到3里面，GPT1即提出了zero-shot能力，GPT2开始增加规模，Scaling Laws讨论了模型规模对loss的影响，总之openai一直是在做同一件事。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;let&amp;rsquo;s think step by step&lt;/strong&gt; 不是玄学，它相当于告诉模型需要一步一步推理，不要一下生成答案。比如让模型step by step地回答&amp;quot;去阿拉斯加旅游需要做哪些准备&amp;quot;，模型就会先输出&amp;quot;纬度高&amp;quot;→&amp;ldquo;天气冷&amp;rdquo;→&amp;ldquo;带上羽绒服&amp;rdquo;，而不是直接给一个笼统的答案。这个事情对于人类而言是常识，但让模型算Dijkstra就不行了。&lt;/p&gt;
+&lt;h2 id="scaling-laws-for-neural-language-models"&gt;&lt;a href="#scaling-laws-for-neural-language-models" class="header-anchor"&gt;&lt;/a&gt;Scaling Laws for Neural Language Models
+&lt;/h2&gt;&lt;p&gt;一个对LLM的理论研究，结论就是大力出奇迹。大模型和大量数据才能得到更好的效果。&lt;/p&gt;
+&lt;h3 id="核心结论"&gt;&lt;a href="#%e6%a0%b8%e5%bf%83%e7%bb%93%e8%ae%ba" class="header-anchor"&gt;&lt;/a&gt;核心结论
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;模型表现和规模强相关，和模型的shape弱相关：规模包括模型参数量N（不包括embedding）、数据集大小D和计算量C&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;幂方法则：对于N、D、C三个因素，模型表现和每个因素成&lt;strong&gt;幂方关系&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="scaling laws curves" class="gallery-image" data-flex-basis="529px" data-flex-grow="220" height="429" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019030303641.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20231019030303641_hu_f83da661e396de4d.png 800w, https://yifan1209.github.io/post/llm-notes/image-20231019030303641.png 946w" width="946"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;数据和模型参数量的比例关系大致为 $N^{0.74}/D$，也就是&lt;strong&gt;模型参数增大8倍，数据也需要增大5倍&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Sample efficiency：大模型能在更少的step内达到相同的性能&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="codex"&gt;&lt;a href="#codex" class="header-anchor"&gt;&lt;/a&gt;Codex
+&lt;/h2&gt;&lt;p&gt;基于GPT的模型架构，在GitHub上微调，可以用来编写Python代码。&lt;/p&gt;
+&lt;p&gt;目标函数没有使用BLEU，而是使用&lt;strong&gt;pass@k&lt;/strong&gt;来评估模型，即生成n个输出（n&amp;gt;k），从中随机抽取k个，输出通过单元测试的概率。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="pass@k" class="gallery-image" data-flex-basis="863px" data-flex-grow="359" height="82" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019032958867.png" width="295"&gt;&lt;/p&gt;
+&lt;h2 id="instructgpt"&gt;&lt;a href="#instructgpt" class="header-anchor"&gt;&lt;/a&gt;InstructGPT
+&lt;/h2&gt;&lt;p&gt;无论是&amp;quot;一个问题后面接一个回答&amp;quot;，还是&amp;quot;一个问题后面接另一个问题&amp;quot;，都是训练语料中可能经常出现的&lt;strong&gt;模式&lt;/strong&gt;。这就是问题所在——如何让经过大规模语料预训练的模型&lt;strong&gt;在输出时符合人类的期待&lt;/strong&gt;？&lt;/p&gt;
+&lt;p&gt;&lt;img alt="InstructGPT" class="gallery-image" data-flex-basis="404px" data-flex-grow="168" height="677" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/v2-5e303a6c65774679128547b38daba755_r.jpg" srcset="https://yifan1209.github.io/post/llm-notes/v2-5e303a6c65774679128547b38daba755_r_hu_54ab0fad4ce8b25b.jpg 800w, https://yifan1209.github.io/post/llm-notes/v2-5e303a6c65774679128547b38daba755_r.jpg 1140w" width="1140"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;V0&lt;/strong&gt;（GPT-3）→ 人工构造少量数据 fine-tune → &lt;strong&gt;V1&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;让V1对同一prompt做多个输出，人工排序，训练一个&lt;strong&gt;RM&lt;/strong&gt;（reward model）&lt;/li&gt;
+&lt;li&gt;用RL不断优化V1，得到&lt;strong&gt;V2&lt;/strong&gt;（InstructGPT）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="t5-google"&gt;&lt;a href="#t5-google" class="header-anchor"&gt;&lt;/a&gt;T5 (Google)
+&lt;/h2&gt;&lt;p&gt;Text-to-Text Transfer Transformer：所有NLP任务统一为text-to-text格式，一个模型干所有任务。&lt;/p&gt;
+&lt;p&gt;提出了C4 corpus。模型为encoder-decoder结构，参数量约为BERT两倍。&lt;/p&gt;
+&lt;p&gt;BERT只适合做分类，不适合做生成；T5则两者都能做。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="T5 architecture" class="gallery-image" data-flex-basis="563px" data-flex-grow="234" height="350" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019020243511.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20231019020243511_hu_c61a203e6fb94f7b.png 800w, https://yifan1209.github.io/post/llm-notes/image-20231019020243511.png 822w" width="822"&gt;&lt;/p&gt;
+&lt;h2 id="switch-transformers"&gt;&lt;a href="#switch-transformers" class="header-anchor"&gt;&lt;/a&gt;Switch Transformers
+&lt;/h2&gt;&lt;p&gt;1.6万亿参数，使用&lt;strong&gt;Mixture of Experts（MoE）&lt;/strong&gt;，只激活部分参数，所以&lt;strong&gt;算起来还比较快&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Switch Transformer MoE" class="gallery-image" data-flex-basis="444px" data-flex-grow="185" height="440" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/114514.jpg" srcset="https://yifan1209.github.io/post/llm-notes/114514_hu_2f9d90ea6b5f7079.jpg 800w, https://yifan1209.github.io/post/llm-notes/114514.jpg 814w" width="814"&gt;&lt;/p&gt;
+&lt;p&gt;将FFN替换为多个Expert，每个token只路由到一个Expert（sparse routing），减少计算量。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="data sharding" class="gallery-image" data-flex-basis="422px" data-flex-grow="176" height="505" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20231019023911359.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20231019023911359_hu_39bda63dc329b5fa.png 800w, https://yifan1209.github.io/post/llm-notes/image-20231019023911359.png 890w" width="890"&gt;&lt;/p&gt;
+&lt;h2 id="1-lora-low-rank-adaptation"&gt;&lt;a href="#1-lora-low-rank-adaptation" class="header-anchor"&gt;&lt;/a&gt;1. LoRA (Low-Rank Adaptation)
+&lt;/h2&gt;&lt;p&gt;冻结预训练权重，向Transformer每层注入可训练的低秩矩阵，大幅减少下游任务的可训练参数量。&lt;/p&gt;
+&lt;p&gt;优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个大模型 + 多个小LoRA模块，对应不同任务&lt;/li&gt;
+&lt;li&gt;训练更快&lt;/li&gt;
+&lt;li&gt;推理无额外延迟（可以将LoRA矩阵合并进原始权重）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="LoRA diagram" class="gallery-image" data-flex-basis="3476px" data-flex-grow="1448" height="62" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240206123313894.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240206123313894_hu_c38276e01b75a440.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240206123313894.png 898w" width="898"&gt;&lt;/p&gt;
+&lt;p&gt;将 $\Delta W$ 表示为 $BA$，其中 A 用随机高斯初始化，B=0，训练过程中只更新A和B。&lt;/p&gt;
+&lt;p&gt;$$W&amp;rsquo; = W + \Delta W = W + BA$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="LoRA math" class="gallery-image" data-flex-basis="1649px" data-flex-grow="687" height="94" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240206123358562.png" width="646"&gt;&lt;/p&gt;
+&lt;h2 id="2-diffusion-models"&gt;&lt;a href="#2-diffusion-models" class="header-anchor"&gt;&lt;/a&gt;2. Diffusion Models
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Deep Unsupervised Learning using Nonequilibrium Thermodynamics&lt;/strong&gt;：用物理扩散过程建模，定义了前向加噪过程和反向去噪过程。&lt;/p&gt;
+&lt;h2 id="3-latent-diffusion-models-stable-diffusion"&gt;&lt;a href="#3-latent-diffusion-models-stable-diffusion" class="header-anchor"&gt;&lt;/a&gt;3. Latent Diffusion Models (Stable Diffusion)
+&lt;/h2&gt;&lt;p&gt;解决原始Diffusion计算成本高的问题，分两阶段：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;训练autoencoder，将图像压缩到低维latent space&lt;/li&gt;
+&lt;li&gt;在latent space上训练Diffusion model&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;用cross-attention实现条件控制（text-to-image）。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="LDM architecture" class="gallery-image" data-flex-basis="392px" data-flex-grow="163" height="568" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240219224917139.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240219224917139_hu_c294bc976af9475e.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240219224917139.png 928w" width="928"&gt;&lt;/p&gt;
+&lt;p&gt;Downsampling factor 4~16 最优：太小给Diffusion太多负担，太大则损失信息。&lt;/p&gt;
+&lt;h2 id="6-dora-weight-decomposed-low-rank-adaptation"&gt;&lt;a href="#6-dora-weight-decomposed-low-rank-adaptation" class="header-anchor"&gt;&lt;/a&gt;6. DoRA: Weight-Decomposed Low-Rank Adaptation
+&lt;/h2&gt;&lt;p&gt;研究发现：finetune时权重的magnitude和direction变化关系不大，而LoRA基本上是正比的（方向变化和幅度变化高度相关）。DoRA将权重分解为magnitude和direction分别优化，使其更像finetune。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="DoRA analysis" class="gallery-image" data-flex-basis="757px" data-flex-grow="315" height="396" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240221204738264.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240221204738264_hu_a1fe22e040803cc4.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240221204738264.png 1250w" width="1250"&gt;&lt;/p&gt;
+&lt;p&gt;$$W = m \cdot \frac{V}{||V||_c}, \quad m = ||W_0||_c, \quad V \text{ trained with LoRA}$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt="DoRA formula" class="gallery-image" data-flex-basis="1394px" data-flex-grow="581" height="106" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240221221210949.png" width="616"&gt;&lt;/p&gt;
+&lt;h2 id="7-vera-vector-based-random-matrix-adaptation"&gt;&lt;a href="#7-vera-vector-based-random-matrix-adaptation" class="header-anchor"&gt;&lt;/a&gt;7. VeRA: Vector-Based Random Matrix Adaptation
+&lt;/h2&gt;&lt;p&gt;&lt;img alt="VeRA" class="gallery-image" data-flex-basis="1812px" data-flex-grow="755" height="94" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240222041039084.png" width="710"&gt;&lt;/p&gt;
+&lt;p&gt;A和B是随机初始化、固定的矩阵；只训练对角阵b和d，参数量更少。&lt;/p&gt;
+&lt;h2 id="9-weight-normalization"&gt;&lt;a href="#9-weight-normalization" class="header-anchor"&gt;&lt;/a&gt;9. Weight Normalization
+&lt;/h2&gt;&lt;p&gt;将权重向量分解为方向和幅度分别参数化，加速训练收敛。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="weight norm" class="gallery-image" data-flex-basis="763px" data-flex-grow="318" height="444" loading="lazy" sizes="(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" src="https://yifan1209.github.io/post/llm-notes/image-20240223020959760.png" srcset="https://yifan1209.github.io/post/llm-notes/image-20240223020959760_hu_f151e3654c864a73.png 800w, https://yifan1209.github.io/post/llm-notes/image-20240223020959760.png 1412w" width="1412"&gt;&lt;/p&gt;</description></item></channel></rss>
